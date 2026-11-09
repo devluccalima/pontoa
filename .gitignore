@@ -1,0 +1,47 @@
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node / React
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+
+# IDEs
+.vscode/
+.idea/
+*.code-workspace
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Local databases
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+
+# Local Docker overrides
+docker-compose.override.yml
+compose.override.yaml
