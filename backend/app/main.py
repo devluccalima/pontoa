@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import health
 from app.api.router import api_router
 from app.core.config import Settings, get_settings
+from app.core.errors import register_exception_handlers
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -21,6 +22,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         redoc_url=None if is_production else "/redoc",
         openapi_url=None if is_production else "/openapi.json",
     )
+
+    register_exception_handlers(app)
 
     app.add_middleware(
         CORSMiddleware,
