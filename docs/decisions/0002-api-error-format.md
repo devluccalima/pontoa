@@ -14,7 +14,9 @@ ecoava os dados enviados pelo cliente.
 
 Todo erro da API usa o envelope:
 
+```json
 {"error": {"code": "...", "message": "...", "details": []}}
+```
 
 - `code`: identificador estável, usado pelo frontend
 - `message`: texto em português para pessoas
