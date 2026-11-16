@@ -25,6 +25,12 @@ Passo 2:
 - Estrutura e convenções definidas
 - Documentação inicial criada
 
+Passo 3:
+- Fundação do frontend (React, TypeScript, Vite, Tailwind, rotas)
+
+Passo 4:
+- Fundação do backend (FastAPI, configuração, erros, logs, testes)
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
@@ -92,8 +98,78 @@ de identidade visual.
 Os módulos de negócio ainda serão integrados
 à API FastAPI nas próximas etapas.
 
-Backend:
-- Pendente
+## Backend
+
+### Tecnologias
+
+- Python 3.15
+- FastAPI e Uvicorn
+- pydantic-settings
+- Pytest
+- Ruff
+
+### Instalação
+
+Todos os comandos do backend devem ser executados
+dentro da pasta `backend`, com o ambiente virtual ativo.
+
+```powershell
+cd backend
+py -3.15 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+Copy-Item .env.example .env
+```
+
+Se a ativação falhar por política de execução:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+### Desenvolvimento
+
+```powershell
+python -m uvicorn app.main:create_app --factory --reload
+```
+
+- Health check: http://127.0.0.1:8000/health
+- Documentação da API: http://127.0.0.1:8000/docs (desativada em produção)
+
+Use sempre `python -m uvicorn` com o ambiente virtual ativo,
+para não executar um Uvicorn instalado globalmente.
+
+### Testes e análise estática
+
+```powershell
+pytest
+ruff check .
+ruff format --check .
+```
+
+Os testes ignoram o `.env` e as variáveis da máquina.
+
+### Configuração
+
+As variáveis usam o prefixo `PONTOA_` e estão documentadas
+em `backend/.env.example`. Prioridade: variável de ambiente,
+depois `.env`, depois valor padrão no código.
+
+O `.env` é lido da pasta onde o comando é executado.
+Fora de `backend`, ele não é encontrado e os valores
+padrão são usados sem aviso.
+
+`PONTOA_DEBUG=true` é proibido quando
+`PONTOA_ENVIRONMENT=production`: a aplicação não inicia.
+
+### Observações conhecidas
+
+- Ao encerrar o servidor com Ctrl+C no Windows, o Uvicorn
+  pode exibir um traceback de `CancelledError` depois de
+  "Finished server process". Não afeta a aplicação.
+- O Ruff usa `target-version = "py314"` até que o suporte
+  ao Python 3.15 seja estável.
 
 Docker:
 - Pendente
