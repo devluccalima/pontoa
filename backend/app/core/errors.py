@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.core.exceptions import AppError
+from app.core.request_context import REQUEST_ID_HEADER, get_request_id
 
 logger = logging.getLogger(__name__)
 
@@ -92,10 +93,12 @@ async def unhandled_error_handler(request: Request, exc: Exception) -> JSONRespo
         request.url.path,
         exc_info=exc,
     )
+    request_id = get_request_id()
     return error_response(
         HTTPStatus.INTERNAL_SERVER_ERROR,
         "internal_error",
         "Ocorreu um erro interno. Tente novamente.",
+        headers={REQUEST_ID_HEADER: request_id} if request_id else None,
     )
 
 
