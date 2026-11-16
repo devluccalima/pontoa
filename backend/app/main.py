@@ -45,6 +45,3 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     logger.info("Aplicação iniciada (ambiente: %s)", settings.environment)
 
     return app
-
-
-app = create_app()
