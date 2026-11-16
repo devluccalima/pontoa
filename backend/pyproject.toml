@@ -16,7 +16,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=9.2",
-    "httpx>=0.28",
+    "httpx2>=2.16",
     "ruff>=0.17",
 ]
 
@@ -26,6 +26,7 @@ include = ["app*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers --strict-config"
+filterwarnings = ["error"]
 
 [tool.ruff]
 line-length = 88
