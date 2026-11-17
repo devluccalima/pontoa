@@ -1,59 +1,163 @@
-
 @import "tailwindcss";
 
-@theme {
-  --color-brand: #19283c;
-  --color-accent: #e9a23b;
-  --color-success: #31916c;
-}
+/*
+ * Tokens do Design System do Pontoa.
+ * Fonte da verdade: docs/design/DESIGN.md
+ */
 
 :root {
-  font-family: Inter, system-ui, sans-serif;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  color-scheme: light;
 
-  --app-bg: #f5f6f8;
-  --app-surface: #ffffff;
-  --app-text: #19283c;
-  --app-muted: #64748b;
-  --app-border: #e2e8f0;
+  /* Papéis de interface */
+  --primary: #19283c;
+  --primary-pressed: #0f1a29;
+  --on-primary: #ffffff;
+  --accent-pressed: #d68f2a;
+  --on-danger: #ffffff;
+  --focus: #19283c;
+  --neutral-bg: #e6e9ee;
+
+  /* Superfícies */
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --hairline: #dde1e8;
+  --border-strong: #7d889a;
+
+  /* Texto */
+  --text: #19283c;
+  --muted: #5b6779;
+  --success-text: #246e52;
+  --accent-text: #7a4f0e;
+  --danger: #b42318;
+
+  /* Fundos de estado */
+  --success-bg: #e3f2eb;
+  --accent-bg: #fbefd9;
+  --danger-bg: #fce8e6;
+
+  /* Elevação */
+  --elevation-float: 0 8px 24px rgb(25 40 60 / 0.16);
+  --float-border: transparent;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --app-bg: #111b2a;
-  --app-surface: #1d2b3e;
-  --app-text: #f5f7fa;
-  --app-muted: #a8b5c8;
-  --app-border: #34465c;
+  --primary: #f5f7fa;
+  --primary-pressed: #dce2ea;
+  --on-primary: #19283c;
+  --on-danger: #19283c;
+  --focus: #e9a23b;
+  --neutral-bg: #2a3a50;
+
+  --bg: #111b2a;
+  --surface: #1d2b3e;
+  --hairline: #34465c;
+  --border-strong: #7a8ba2;
+
+  --text: #f5f7fa;
+  --muted: #a8b5c8;
+  --success-text: #5cc59a;
+  --accent-text: #e9a23b;
+  --danger: #f28b82;
+
+  --success-bg: #173a2f;
+  --accent-bg: #3a2c14;
+  --danger-bg: #3f1f22;
+
+  --elevation-float: none;
+  --float-border: #7a8ba2;
 }
 
-* {
-  box-sizing: border-box;
+@theme {
+  /* Cores fixas da marca */
+  --color-brand: #19283c;
+  --color-accent: #e9a23b;
+  --color-success: #31916c;
+
+  --font-sans: "IBM Plex Sans Variable", system-ui, sans-serif;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
 }
 
-html {
-  min-width: 320px;
+@theme inline {
+  /* Cores que mudam com o tema */
+  --color-primary: var(--primary);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-on-primary: var(--on-primary);
+  --color-accent-pressed: var(--accent-pressed);
+  --color-on-danger: var(--on-danger);
+  --color-focus: var(--focus);
+  --color-neutral-bg: var(--neutral-bg);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-hairline: var(--hairline);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-success-text: var(--success-text);
+  --color-accent-text: var(--accent-text);
+  --color-danger: var(--danger);
+  --color-success-bg: var(--success-bg);
+  --color-accent-bg: var(--accent-bg);
+  --color-danger-bg: var(--danger-bg);
+
+  --color-float-border: var(--float-border);
+  --shadow-float: var(--elevation-float);
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: var(--app-bg);
-  color: var(--app-text);
+/*
+ * Aliases temporários para os componentes atuais.
+ * Remover quando os componentes forem migrados aos tokens novos.
+ */
+:root {
+  --app-bg: var(--bg);
+  --app-surface: var(--surface);
+  --app-text: var(--text);
+  --app-muted: var(--muted);
+  --app-border: var(--hairline);
 }
 
-button,
-input {
-  font: inherit;
-}
+@layer base {
+  html {
+    min-width: 320px;
+    font-family: var(--font-sans);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
 
-button {
-  cursor: pointer;
-}
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+  }
 
-button:disabled {
-  cursor: not-allowed;
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
