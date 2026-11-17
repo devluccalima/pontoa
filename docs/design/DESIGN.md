@@ -303,10 +303,10 @@ Estados que não envolvem dinheiro nem problema usam a variante neutra.
 
 ### Durações
 
-| Token | Duração | Uso |
-|---|---|---|
-| `motion-fast` | 100ms | Estado pressionado, troca de cor |
-| `motion-base` | 200ms | Entrada de toast, expansão da comanda, diálogos |
+| Token | Duração | Tailwind | Uso |
+|---|---|---|---|
+| `motion-fast` | 100ms | `duration-100` | Estado pressionado, troca de cor |
+| `motion-base` | 200ms | `duration-200` | Entrada de toast, expansão da comanda, diálogos |
 
 - Curva de saída (`ease-out`) para entradas; nenhuma animação
   acima de 300ms.
