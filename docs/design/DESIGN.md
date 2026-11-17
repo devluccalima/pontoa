@@ -77,11 +77,11 @@ O tema é aplicado pelo atributo `data-theme` no elemento `html`.
 
 ### Estados (badges)
 
-| Estado | Claro (texto / fundo) | Escuro (texto / fundo) | Contraste |
-|---|---|---|---|
-| Pago / Recebido | `#246E52` / `#E3F2EB` | `#5CC59A` / `#173A2F` | 5,3:1 / 5,9:1 |
-| A receber / Atenção | `#7A4F0E` / `#FBEFD9` | `#E9A23B` / `#3A2C14` | 6,3:1 / 6,3:1 |
-| Cancelado / Erro | `#B42318` / `#FCE8E6` | `#F28B82` / `#3F1F22` | 5,6:1 / 6,2:1 |
+| Estado | Texto | Fundo | Claro (texto / fundo) | Escuro (texto / fundo) | Contraste |
+|---|---|---|---|---|---|
+| Pago / Recebido | `success-text` | `success-bg` | `#246E52` / `#E3F2EB` | `#5CC59A` / `#173A2F` | 5,3:1 / 5,9:1 |
+| A receber / Atenção | `accent-text` | `accent-bg` | `#7A4F0E` / `#FBEFD9` | `#E9A23B` / `#3A2C14` | 6,3:1 / 6,3:1 |
+| Cancelado / Erro | `danger` | `danger-bg` | `#B42318` / `#FCE8E6` | `#F28B82` / `#3F1F22` | 5,6:1 / 6,2:1 |
 
 ### Regras
 
@@ -186,10 +186,10 @@ para que as curvas fiquem paralelas.
 
 ### Elevação
 
-| Nível | Claro | Escuro | Uso |
-|---|---|---|---|
-| 0 — plano | borda `hairline`, sem sombra | borda `hairline`, sem sombra | Cartões, painéis, comanda |
-| 1 — flutuante | `0 8px 24px rgb(25 40 60 / 0.16)` | borda `border-strong`, sem sombra | Diálogos, menus, barra do carrinho |
+| Nível | Classes | Claro | Escuro | Uso |
+|---|---|---|---|---|
+| 0 — plano | `border border-hairline` | sem sombra | sem sombra | Cartões, painéis, comanda |
+| 1 — flutuante | `border border-float-border shadow-float` | sombra `0 8px 24px rgb(25 40 60 / 0.16)`, borda transparente | sem sombra, borda `#7A8BA2` | Diálogos, menus, barra do carrinho |
 
 No tema escuro, sombra quase não é percebida; a separação
 vem da borda mais forte.
@@ -263,9 +263,9 @@ controle de quantidade e subtotal alinhado à direita.
 
 | Variante | Texto | Fundo | Ícone |
 |---|---|---|---|
-| Sucesso | `success-text` | fundo de sucesso (seção 2) | Check |
-| Atenção | `accent-text` | fundo de atenção (seção 2) | Relógio |
-| Erro | `danger` | fundo de erro (seção 2) | X |
+| Sucesso | `success-text` | success-bg | Check |
+| Atenção | `accent-text` | accent-bg | Relógio |
+| Erro | `danger` | danger-bg | X |
 | Neutro | `text` | `neutral-bg` | Opcional |
 
 Medidas: texto `small`, raio `radius-pill`, padding 4px × 10px,
