@@ -263,9 +263,9 @@ controle de quantidade e subtotal alinhado à direita.
 
 | Variante | Texto | Fundo | Ícone |
 |---|---|---|---|
-| Sucesso | `success-text` | success-bg | Check |
-| Atenção | `accent-text` | accent-bg | Relógio |
-| Erro | `danger` | danger-bg | X |
+| Sucesso | `success-text` | `success-bg` | Check |
+| Atenção | `accent-text` | `accent-bg` | Relógio |
+| Erro | `danger` | `danger-bg` | X |
 | Neutro | `text` | `neutral-bg` | Opcional |
 
 Medidas: texto `small`, raio `radius-pill`, padding 4px × 10px,
