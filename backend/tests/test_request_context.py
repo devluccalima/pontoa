@@ -21,3 +21,10 @@ def test_cors_allows_only_configured_origins(client: TestClient) -> None:
 
     assert allowed.headers["access-control-allow-origin"] == "http://localhost:5173"
     assert "access-control-allow-origin" not in blocked.headers
+
+
+def test_cors_exposes_request_id_to_browser(client: TestClient) -> None:
+    response = client.get("/health", headers={"Origin": "http://localhost:5173"})
+
+    exposed = response.headers["access-control-expose-headers"].lower()
+    assert "x-request-id" in exposed
