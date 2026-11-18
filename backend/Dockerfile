@@ -11,7 +11,8 @@ RUN useradd --create-home --uid 10001 pontoa
 
 COPY pyproject.toml ./
 COPY app ./app
-RUN pip install .
+RUN pip install . \
+    && rm -rf build *.egg-info
 
 USER pontoa
 
