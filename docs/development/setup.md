@@ -173,6 +173,11 @@ padrão são usados sem aviso.
   "Finished server process". Não afeta a aplicação.
 - O Ruff usa `target-version = "py314"` até que o suporte
   ao Python 3.15 seja estável.
+- Ao encerrar o servidor com Ctrl+C (SIGINT), o Uvicorn exibe
+  um traceback de `CancelledError` com Python 3.15, em qualquer
+  sistema operacional, e a fase de encerramento da aplicação
+  não é executada. Com SIGTERM (`docker compose stop`), o
+  encerramento é completo e sem erros.
 
 ## Docker
 
