@@ -112,3 +112,15 @@ def test_unhandled_error_is_logged_but_hidden_from_client(
     assert len(error_logs) == 1
     assert error_logs[0].exc_info is not None
     assert error_logs[0].request_id == response.headers["x-request-id"]
+
+
+def test_unhandled_error_response_is_readable_by_allowed_origin(
+    client: TestClient,
+) -> None:
+    response = client.get("/test/boom", headers={"Origin": "http://localhost:5173"})
+
+    assert response.status_code == 500
+    assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
+    assert "x-request-id" in response.headers["access-control-expose-headers"].lower()
+    assert "," not in response.headers["x-request-id"]
+    assert_error_envelope(response.json(), "internal_error")
