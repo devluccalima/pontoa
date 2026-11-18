@@ -1,0 +1,14 @@
+# Ambiente local
+.venv/
+.env
+.env.*
+
+# Artefatos do Python e das ferramentas
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Fora da imagem de produção
+tests/
