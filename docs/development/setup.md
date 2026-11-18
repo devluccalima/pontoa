@@ -31,6 +31,9 @@ Passo 3:
 Passo 4:
 - Fundação do backend (FastAPI, configuração, erros, logs, testes)
 
+Passo 5:
+- Infraestrutura local com Docker Compose (PostgreSQL e imagem da API)
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
@@ -171,12 +174,74 @@ padrão são usados sem aviso.
 - O Ruff usa `target-version = "py314"` até que o suporte
   ao Python 3.15 seja estável.
 
-Docker:
-- Pendente
+## Docker
 
-PostgreSQL:
-- Pendente
+### Pré-requisitos
 
+- Docker Desktop com o motor WSL 2
+
+### Configuração
+
+Na raiz do repositório:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Defina uma senha em `POSTGRES_PASSWORD`. Para gerar uma:
+
+```powershell
+$b = [byte[]]::new(24)
+[System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b)
+-join ($b | ForEach-Object { $_.ToString('x2') })
+```
+
+### Banco de dados (dia a dia)
+
+```powershell
+docker compose up -d
+docker compose ps
+```
+
+Sobe apenas o PostgreSQL 18 em `127.0.0.1:5432`.
+Aguarde o status `(healthy)`.
+
+Acesso pelo terminal:
+
+```powershell
+docker compose exec db psql -U pontoa -d pontoa
+```
+
+### API em container (validação da imagem)
+
+Pare o backend local antes; os dois usam a porta 8000.
+
+```powershell
+docker compose --profile app up -d --build
+docker compose --profile app ps
+```
+
+A API roda em modo produção: `/docs` fica desativado.
+
+### Parar e remover
+
+```powershell
+docker compose stop                # para, mantém containers e dados
+docker compose --profile app down  # remove containers e rede, mantém dados
+```
+
+`docker compose down -v` remove também o volume:
+**todos os dados do banco são apagados**.
+
+### Observações
+
+- Se a porta 5432 estiver ocupada (outro PostgreSQL),
+  defina `POSTGRES_PORT` no `.env`.
+- `POSTGRES_INITDB_ARGS` só tem efeito na criação do
+  volume. Para aplicar uma mudança, é preciso recriar
+  o banco com `down -v`, perdendo os dados.
+- O `compose.yaml` fica na raiz; `infra/docker/` está
+  reservada para a infraestrutura de produção (ADR-0003).
 Migrações:
 - Pendente
 
