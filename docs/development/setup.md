@@ -168,9 +168,6 @@ padrão são usados sem aviso.
 
 ### Observações conhecidas
 
-- Ao encerrar o servidor com Ctrl+C no Windows, o Uvicorn
-  pode exibir um traceback de `CancelledError` depois de
-  "Finished server process". Não afeta a aplicação.
 - O Ruff usa `target-version = "py314"` até que o suporte
   ao Python 3.15 seja estável.
 - Ao encerrar o servidor com Ctrl+C (SIGINT), o Uvicorn exibe
@@ -247,6 +244,7 @@ docker compose --profile app down  # remove containers e rede, mantém dados
   o banco com `down -v`, perdendo os dados.
 - O `compose.yaml` fica na raiz; `infra/docker/` está
   reservada para a infraestrutura de produção (ADR-0003).
+
 Migrações:
 - Pendente
 
