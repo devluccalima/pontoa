@@ -6,10 +6,18 @@ from contextvars import ContextVar
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 REQUEST_ID_HEADER = "X-Request-ID"
+HEALTH_CHECK_PATH = "/health"
 
 _request_id: ContextVar[str | None] = ContextVar("request_id", default=None)
 
 logger = logging.getLogger(__name__)
+
+
+def _access_log_level(path: str, status_code: int) -> int:
+    """Health checks bem-sucedidos vão para DEBUG, para não poluir os logs."""
+    if path == HEALTH_CHECK_PATH and status_code < 400:
+        return logging.DEBUG
+    return logging.INFO
 
 
 def get_request_id() -> str | None:
@@ -46,7 +54,8 @@ class RequestContextMiddleware:
             await self.app(scope, receive, send_with_request_id)
         finally:
             duration_ms = (time.perf_counter() - started_at) * 1000
-            logger.info(
+            logger.log(
+                _access_log_level(scope["path"], status_code),
                 "%s %s %d %.1fms",
                 scope["method"],
                 scope["path"],
