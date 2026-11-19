@@ -1,3 +1,6 @@
+import logging
+
+import pytest
 from fastapi.testclient import TestClient
 
 
@@ -28,3 +31,25 @@ def test_cors_exposes_request_id_to_browser(client: TestClient) -> None:
 
     exposed = response.headers["access-control-expose-headers"].lower()
     assert "x-request-id" in exposed
+
+
+def test_access_log_level_depends_on_path_and_status(
+    client: TestClient,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    caplog.set_level(logging.DEBUG, logger="app.core.request_context")
+
+    client.get("/health")
+    client.post("/health")
+    client.get("/api/v1/nao-existe")
+
+    access_logs = [
+        (record.args[1], record.args[2], record.levelno)
+        for record in caplog.records
+        if record.name == "app.core.request_context"
+    ]
+    assert access_logs == [
+        ("/health", 200, logging.DEBUG),
+        ("/health", 405, logging.INFO),
+        ("/api/v1/nao-existe", 404, logging.INFO),
+    ]
