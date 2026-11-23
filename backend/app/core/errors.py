@@ -53,7 +53,7 @@ def error_response(
 
 
 async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
-    return error_response(exc.status_code, exc.code, exc.message)
+    return error_response(exc.status_code, exc.code, exc.message, headers=exc.headers)
 
 
 async def http_error_handler(
