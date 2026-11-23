@@ -40,6 +40,9 @@ Passo 6:
 Passo 7:
 - Autenticação, usuários e papéis (ADR-0005)
 
+Passo 8:
+- Catálogo: categorias e produtos (ADR-0006)
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
