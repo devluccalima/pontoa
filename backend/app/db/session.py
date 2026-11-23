@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import Settings
 
+CONNECT_TIMEOUT_SECONDS = 5
 
 def create_db_engine(settings: Settings) -> Engine:
     """Cria o engine; nenhuma conexão é aberta até o primeiro uso.
@@ -15,7 +16,8 @@ def create_db_engine(settings: Settings) -> Engine:
     return create_engine(
         settings.database_url.get_secret_value(),
         pool_pre_ping=True,
-        connect_args={"options": "-c timezone=UTC"},
+        connect_args={"options": "-c timezone=UTC",
+        "connect_timeout": CONNECT_TIMEOUT_SECONDS},
     )
 
 
