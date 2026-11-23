@@ -14,6 +14,9 @@ COPY app ./app
 RUN pip install . \
     && rm -rf build *.egg-info
 
+COPY alembic.ini ./
+COPY migrations ./migrations
+
 USER pontoa
 
 EXPOSE 8000
