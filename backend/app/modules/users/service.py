@@ -52,7 +52,7 @@ def create_user(db: Session, business_id: uuid.UUID, data: UserCreate) -> User:
 
 
 def update_user(db: Session, user: User, data: UserUpdate) -> User:
-    changes = data.model_dump(exclude_unset=True, exclude_none=True)
+    changes = data.changes()
 
     loses_owner_access = (
         user.role == UserRole.OWNER
