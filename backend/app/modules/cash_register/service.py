@@ -21,6 +21,7 @@ from app.modules.cash_register.schemas import (
     CashSummary,
     difference,
 )
+from app.modules.orders.models import IN_PROGRESS, Order
 from app.modules.users.models import User
 
 CASH_CLOSED = "O caixa está fechado. Abra o caixa para continuar."
@@ -121,6 +122,15 @@ def list_movements(db: Session, session: CashSession) -> list[CashMovement]:
 
 def close_session(db: Session, user: User, data: CashSessionClose) -> CashSession:
     session = require_open_session(db, user.business_id, for_update=True)
+    pending = db.scalar(
+        select(func.count(Order.id)).where(
+            Order.cash_session_id == session.id, Order.status.in_(IN_PROGRESS)
+        )
+    )
+    if pending:
+        raise BusinessRuleError(
+            f"Há {pending} pedido(s) em andamento. Entregue ou cancele antes de fechar."
+        )
 
     session.expected_amount = summarize(db, session).expected_amount
     session.counted_amount = data.counted_amount
