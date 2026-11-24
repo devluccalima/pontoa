@@ -1,7 +1,7 @@
 from functools import lru_cache
 from typing import Literal, Self
 
-from pydantic import SecretStr, field_validator, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DATABASE_URL_SCHEME = "postgresql+psycopg://"
@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173"]
 
     database_url: SecretStr
+    session_ttl_hours: int = Field(default=12, ge=1, le=168)
 
     @field_validator("database_url")
     @classmethod

@@ -37,6 +37,9 @@ Passo 5:
 Passo 6:
 - Persistência (SQLAlchemy, Alembic, banco de testes, tabela `businesses`)
 
+Passo 7:
+- Autenticação, usuários e papéis (ADR-0005)
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
@@ -267,6 +270,27 @@ existente, crie-o uma vez:
 
 ```powershell
 docker compose exec db createdb -U pontoa pontoa_test
+```
+
+## Primeiro acesso
+
+Com as migrações aplicadas, crie o estabelecimento e o
+primeiro dono (a senha é pedida no terminal):
+
+```powershell
+python -m app.cli create-business --name "Arepas da Feira" --owner-name "Lucca" --owner-email lucca@example.com
+```
+
+Em `/docs`, use `POST /api/v1/auth/login` e copie o
+`access_token`; no botão **Authorize**, cole o token para
+testar as rotas protegidas.
+
+O dono cadastra os operadores em `POST /api/v1/users`.
+
+Na API em container:
+
+```powershell
+docker compose --profile app run --rm api python -m app.cli create-business --name "Arepas da Feira" --owner-name "Lucca" --owner-email lucca@example.com
 ```
 
 ## Migrações

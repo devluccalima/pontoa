@@ -40,6 +40,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
 
+    app.state.settings = settings
     app.state.engine = engine
     app.state.session_factory = create_session_factory(engine)
 

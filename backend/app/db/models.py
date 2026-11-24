@@ -5,6 +5,8 @@ o autogenerate não o enxerga.
 """
 
 from app.db.base import Base
+from app.modules.auth.models import UserSession
 from app.modules.businesses.models import Business
+from app.modules.users.models import User
 
-__all__ = ["Base", "Business"]
+__all__ = ["Base", "Business", "User", "UserSession"]
