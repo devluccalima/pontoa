@@ -17,7 +17,7 @@ def update_business(
     data: BusinessUpdate, db: DbSession, owner: OwnerUser
 ) -> BusinessRead:
     business = owner.business
-    for field, value in data.model_dump(exclude_unset=True, exclude_none=True).items():
+    for field, value in data.changes().items():
         setattr(business, field, value)
     db.commit()
     return BusinessRead.model_validate(business)

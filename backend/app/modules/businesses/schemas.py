@@ -5,6 +5,8 @@ from zoneinfo import available_timezones
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 
+from app.core.schemas import PartialUpdate
+
 
 @cache
 def _known_timezones() -> frozenset[str]:
@@ -28,8 +30,6 @@ class BusinessRead(BaseModel):
     timezone: str
 
 
-class BusinessUpdate(BaseModel):
-    """Campos ausentes não são alterados."""
-
+class BusinessUpdate(PartialUpdate):
     name: Annotated[str, Field(min_length=1, max_length=120)] | None = None
     timezone: Timezone | None = None

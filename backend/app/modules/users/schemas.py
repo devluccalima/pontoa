@@ -4,6 +4,7 @@ from typing import Annotated
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, EmailStr, Field
 
+from app.core.schemas import PartialUpdate
 from app.modules.users.models import UserRole
 
 PASSWORD_MIN_LENGTH = 8
@@ -39,9 +40,7 @@ class UserCreate(BaseModel):
     role: UserRole = UserRole.OPERATOR
 
 
-class UserUpdate(BaseModel):
-    """Campos ausentes não são alterados."""
-
+class UserUpdate(PartialUpdate):
     name: Name | None = None
     role: UserRole | None = None
     active: bool | None = None
