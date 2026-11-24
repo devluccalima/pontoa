@@ -46,6 +46,9 @@ Passo 8:
 Passo 9:
 - Caixa: abertura, suprimento, sangria e fechamento (ADR-0007)
 
+Passo 10:
+- Pedidos: numeração por caixa, preparo e cancelamento (ADR-0008)
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
