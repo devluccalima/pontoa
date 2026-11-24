@@ -1,10 +1,10 @@
 import uuid
 from enum import StrEnum
 
-from sqlalchemy import Enum, ForeignKey, String, true
+from sqlalchemy import ForeignKey, String, true
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base, IdMixin, TimestampMixin
+from app.db.base import Base, IdMixin, TimestampMixin, text_enum
 from app.modules.businesses.models import Business
 
 
@@ -24,16 +24,7 @@ class User(IdMixin, TimestampMixin, Base):
     name: Mapped[str] = mapped_column(String(120))
     email: Mapped[str] = mapped_column(String(254), unique=True)
     password_hash: Mapped[str] = mapped_column(String(255))
-    role: Mapped[UserRole] = mapped_column(
-        Enum(
-            UserRole,
-            name="role",
-            native_enum=False,
-            create_constraint=True,
-            length=20,
-            values_callable=lambda roles: [role.value for role in roles],
-        )
-    )
+    role: Mapped[UserRole] = mapped_column(text_enum(UserRole, "role"))
     active: Mapped[bool] = mapped_column(server_default=true())
 
     business: Mapped[Business] = relationship(lazy="joined")

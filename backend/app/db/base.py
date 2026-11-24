@@ -1,8 +1,9 @@
 import uuid
 from datetime import datetime
 from decimal import Decimal
+from enum import StrEnum
 
-from sqlalchemy import DateTime, ForeignKey, MetaData, Numeric, func
+from sqlalchemy import DateTime, Enum, ForeignKey, MetaData, Numeric, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 NAMING_CONVENTION = {
@@ -50,4 +51,16 @@ class BusinessScopedMixin(IdMixin):
 
     business_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("businesses.id", ondelete="RESTRICT"), index=True, sort_order=-9
+    )
+
+
+def text_enum(enum_class: type[StrEnum], name: str) -> Enum:
+    """Enum guardado como texto com CHECK, fácil de evoluir por migração."""
+    return Enum(
+        enum_class,
+        name=name,
+        native_enum=False,
+        create_constraint=True,
+        length=20,
+        values_callable=lambda members: [member.value for member in members],
     )
