@@ -49,6 +49,9 @@ Passo 9:
 Passo 10:
 - Pedidos: numeração por caixa, preparo e cancelamento (ADR-0008)
 
+Passo 11:
+- Pagamentos: Pix, dinheiro e cartão, troco e estorno (ADR-0009)
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
