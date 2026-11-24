@@ -5,7 +5,7 @@ from typing import Annotated
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from app.core.schemas import Money
-from app.modules.orders.models import OrderStatus
+from app.modules.orders.models import OrderStatus, PaymentStatus
 
 ItemNotes = Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)]
 CustomerName = Annotated[str, StringConstraints(strip_whitespace=True, max_length=60)]
@@ -57,6 +57,9 @@ class OrderRead(BaseModel):
     notes: str | None
     status: OrderStatus
     total: Money
+    paid_amount: Money
+    amount_due: Money
+    payment_status: PaymentStatus
     items: list[OrderItemRead]
     created_by_id: uuid.UUID
     created_at: datetime

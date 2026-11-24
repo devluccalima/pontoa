@@ -22,6 +22,7 @@ from app.modules.cash_register.schemas import (
     difference,
 )
 from app.modules.orders.models import IN_PROGRESS, Order
+from app.modules.payments.models import Payment, PaymentMethod
 from app.modules.users.models import User
 
 CASH_CLOSED = "O caixa está fechado. Abra o caixa para continuar."
@@ -151,12 +152,26 @@ def summarize(db: Session, session: CashSession) -> CashSummary:
     )
     deposits = Decimal(totals.get(CashMovementKind.DEPOSIT, 0))
     withdrawals = Decimal(totals.get(CashMovementKind.WITHDRAWAL, 0))
+    cash_payments = _cash_payments(db, session.id)
     return CashSummary(
         opening_amount=session.opening_amount,
         deposits=deposits,
         withdrawals=withdrawals,
-        expected_amount=session.opening_amount + deposits - withdrawals,
+        cash_payments=cash_payments,
+        expected_amount=session.opening_amount + deposits - withdrawals + cash_payments,
     )
+
+
+def _cash_payments(db: Session, cash_session_id: uuid.UUID) -> Decimal:
+    """Dinheiro em espécie recebido no caixa, sem estornos e sem o troco."""
+    total = db.scalar(
+        select(func.coalesce(func.sum(Payment.amount), 0)).where(
+            Payment.cash_session_id == cash_session_id,
+            Payment.method == PaymentMethod.CASH,
+            Payment.voided_at.is_(None),
+        )
+    )
+    return Decimal(total)
 
 
 def to_read(db: Session, session: CashSession) -> CashSessionRead:
