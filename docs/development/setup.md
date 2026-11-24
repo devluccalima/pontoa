@@ -34,6 +34,9 @@ Passo 4:
 Passo 5:
 - Infraestrutura local com Docker Compose (PostgreSQL e imagem da API)
 
+Passo 6:
+- Persistência (SQLAlchemy, Alembic, banco de testes, tabela `businesses`)
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
@@ -108,6 +111,7 @@ Os módulos de negócio ainda serão integrados
 - Python 3.15
 - FastAPI e Uvicorn
 - pydantic-settings
+- SQLAlchemy 2.1, psycopg 3 e Alembic
 - Pytest
 - Ruff
 
@@ -125,6 +129,9 @@ python -m pip install -e ".[dev]"
 Copy-Item .env.example .env
 ```
 
+No `backend/.env`, troque `troque-esta-senha` nas duas URLs
+do banco pela `POSTGRES_PASSWORD` do `.env` da raiz.
+
 Se a ativação falhar por política de execução:
 
 ```powershell
@@ -138,6 +145,7 @@ python -m uvicorn app.main:create_app --factory --reload
 ```
 
 - Health check: http://127.0.0.1:8000/health
+- Prontidão (acesso ao banco): http://127.0.0.1:8000/health/ready
 - Documentação da API: http://127.0.0.1:8000/docs (desativada em produção)
 
 Use sempre `python -m uvicorn` com o ambiente virtual ativo,
@@ -151,7 +159,13 @@ ruff check .
 ruff format --check .
 ```
 
-Os testes ignoram o `.env` e as variáveis da máquina.
+Os testes ignoram o `.env` e as variáveis da máquina, exceto
+`PONTOA_TEST_DATABASE_URL`, que aponta para o banco de testes.
+O banco precisa estar ligado (`docker compose up -d`).
+
+Cada teste de banco roda numa transação desfeita ao final;
+o banco de testes é migrado automaticamente no início.
+O nome do banco de testes precisa terminar em `_test`.
 
 ### Configuração
 
@@ -245,8 +259,55 @@ docker compose --profile app down  # remove containers e rede, mantém dados
 - O `compose.yaml` fica na raiz; `infra/docker/` está
   reservada para a infraestrutura de produção (ADR-0003).
 
-Migrações:
-- Pendente
+### Banco de testes
+
+O banco `pontoa_test` é criado automaticamente apenas
+quando o volume do PostgreSQL é criado. Em um volume já
+existente, crie-o uma vez:
+
+```powershell
+docker compose exec db createdb -U pontoa pontoa_test
+```
+
+## Migrações
+
+As migrações ficam em `backend/migrations/versions` e são
+executadas a partir da pasta `backend`, com o venv ativo.
+
+Aplicar todas as migrações pendentes:
+
+```powershell
+alembic upgrade head
+```
+
+Criar uma migração depois de alterar um modelo:
+
+```powershell
+alembic revision --autogenerate -m "descrição curta"
+```
+
+A migração gerada **sempre** deve ser revisada antes do
+commit: o autogenerate não detecta tudo (por exemplo,
+renomeações viram remoção e criação de coluna).
+
+Outros comandos:
+
+```powershell
+alembic current          # versão aplicada no banco
+alembic history          # histórico de migrações
+alembic downgrade -1     # desfaz a última migração
+alembic check            # falha se houver modelo sem migração
+```
+
+Todo modelo novo precisa ser importado em
+`app/db/models.py`; caso contrário, o autogenerate
+não o enxerga.
+
+Na API em container:
+
+```powershell
+docker compose --profile app run --rm api alembic upgrade head
+```
 
 ## Configurações
 

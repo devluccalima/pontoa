@@ -23,3 +23,9 @@ class BusinessRuleError(AppError):
     status_code = HTTPStatus.CONFLICT
     code = "business_rule_violation"
     message = "A operação não é permitida no estado atual."
+
+
+class ServiceUnavailableError(AppError):
+    status_code = HTTPStatus.SERVICE_UNAVAILABLE
+    code = "service_unavailable"
+    message = "Serviço temporariamente indisponível."
