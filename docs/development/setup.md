@@ -43,6 +43,9 @@ Passo 7:
 Passo 8:
 - Catálogo: categorias e produtos (ADR-0006)
 
+Passo 9:
+- Caixa: abertura, suprimento, sangria e fechamento (ADR-0007)
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
