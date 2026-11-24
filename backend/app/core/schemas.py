@@ -5,12 +5,26 @@ from pydantic import BaseModel, Field, PlainSerializer, model_validator
 
 MONEY_MAX_DIGITS = 10
 
+_as_text = PlainSerializer(
+    lambda value: f"{value:.2f}", return_type=str, when_used="json"
+)
+
 Money = Annotated[
     Decimal,
     Field(ge=0, max_digits=MONEY_MAX_DIGITS, decimal_places=2),
-    PlainSerializer(lambda value: f"{value:.2f}", return_type=str, when_used="json"),
+    _as_text,
 ]
 """Valor em reais: nunca negativo, até 2 casas, enviado como texto ("18.50")."""
+
+PositiveMoney = Annotated[
+    Decimal,
+    Field(gt=0, max_digits=MONEY_MAX_DIGITS, decimal_places=2),
+    _as_text,
+]
+"""Valor em reais maior que zero."""
+
+SignedMoney = Annotated[Decimal, _as_text]
+"""Valor calculado que pode ser negativo, como a diferença do caixa."""
 
 
 class PartialUpdate(BaseModel):
