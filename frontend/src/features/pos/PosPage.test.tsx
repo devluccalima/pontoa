@@ -1,57 +1,19 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import type { CashSession, Order, Payment, Product } from '../../api/types'
+import type { CashSession, Payment, Product } from '../../api/types'
 import { saveToken } from '../../auth/tokenStore'
 import { apiError, business, fakeApi, makeUser } from '../../test/fakeApi'
 import { renderApp } from '../../test/renderApp'
 import { textMatcher } from '../../test/textMatcher'
+import { buildOrder, buildPayment } from '../../test/builders'
 
 const queijo: Product = { id: 'p1', category_id: 'c1', name: 'Arepa de queijo', description: null, price: '18.50', position: 0, active: true }
 const suco: Product = { ...queijo, id: 'p2', category_id: 'c2', name: 'Suco', price: '9.00' }
 const inativo: Product = { ...queijo, id: 'p3', name: 'Fora do cardápio', active: false }
 const session = { id: 's1', is_open: true } as CashSession
 
-function order(overrides: Partial<Order> = {}): Order {
-  return {
-    id: 'o1',
-    cash_session_id: 's1',
-    number: 1,
-    customer_name: 'Ana',
-    notes: null,
-    status: 'new',
-    total: '37.00',
-    paid_amount: '0.00',
-    amount_due: '37.00',
-    payment_status: 'unpaid',
-    items: [],
-    created_by_id: 'u',
-    created_at: '2026-11-25T12:00:00Z',
-    delivered_at: null,
-    cancelled_at: null,
-    cancelled_by_id: null,
-    cancel_reason: null,
-    ...overrides,
-  }
-}
-
-function payment(overrides: Partial<Payment>): Payment {
-  return {
-    id: 'pay',
-    order_id: 'o1',
-    cash_session_id: 's1',
-    method: 'pix',
-    amount: '37.00',
-    received_amount: null,
-    change: null,
-    created_by_id: 'u',
-    created_at: '2026-11-25T12:00:00Z',
-    is_voided: false,
-    voided_at: null,
-    voided_by_id: null,
-    void_reason: null,
-    ...overrides,
-  }
-}
+const order = buildOrder
+const payment = buildPayment
 
 function posApi(options: { cashOpen?: boolean; role?: 'owner' | 'operator' } = {}, extra: Parameters<typeof fakeApi>[0] = {}) {
   saveToken('t')
