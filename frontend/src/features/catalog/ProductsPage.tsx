@@ -37,7 +37,7 @@ export function ProductsPage() {
   const error = categories.error ?? products.error
 
   return (
-    <section>
+    <section className="flex flex-col gap-6">
       <PageHeader
         title="Produtos"
         description="O que aparece na tela de vendas."
@@ -64,7 +64,7 @@ export function ProductsPage() {
       ) : loading ? (
         <DelayedSpinner label="Carregando produtos" />
       ) : (
-        <>
+        <div className="flex flex-col gap-4">
           <CategoryFilter categories={categories.data ?? []} value={filter} onChange={setFilter} />
           {products.data?.length === 0 ? (
             <EmptyState icon={<Package size={28} aria-hidden />} title="Nenhum produto cadastrado">
@@ -84,7 +84,7 @@ export function ProductsPage() {
               ))}
             </ul>
           )}
-        </>
+        </div>
       )}
 
       {editing ? (
@@ -117,7 +117,7 @@ function CategoryFilter({
     { id: UNCATEGORIZED, label: 'Sem categoria' },
   ]
   return (
-    <div role="group" aria-label="Filtrar por categoria" className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:px-0">
+    <div role="group" aria-label="Filtrar por categoria" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:px-0">
       {options.map((option) => {
         const selected = option.id === value
         return (
