@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { ApiError, apiRequest, onUnauthorized } from '../api/client'
 import type { LoginResponse, MeResponse } from '../api/types'
 import { clearToken, readToken, saveToken } from './tokenStore'
@@ -7,6 +8,7 @@ import { AuthContext } from './useAuth'
 import type { AuthState } from './useAuth'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient()
   const [state, setState] = useState<AuthState>(() =>
     readToken() ? { status: 'loading' } : { status: 'anonymous' },
   )
@@ -15,10 +17,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Sessão expirada ou revogada em qualquer requisição: volta ao login.
     onUnauthorized(() => {
       clearToken()
+      queryClient.clear()
       setState({ status: 'anonymous', reason: 'expired' })
     })
     return () => onUnauthorized(null)
-  }, [])
+  }, [queryClient])
 
   useEffect(() => {
     if (state.status !== 'loading') return
@@ -50,8 +53,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Mesmo sem conexão, o aparelho sai; a sessão expira sozinha no servidor.
     }
     clearToken()
+    // Dados do usuário anterior não podem aparecer para quem entrar depois no aparelho.
+    queryClient.clear()
     setState({ status: 'anonymous' })
-  }, [])
+  }, [queryClient])
 
   const retry = useCallback(() => setState({ status: 'loading' }), [])
 

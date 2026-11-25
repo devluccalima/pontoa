@@ -44,7 +44,8 @@ describe('authentication', () => {
     fireEvent.change(screen.getByLabelText('Senha'), { target: { value: 'errada' } })
     fireEvent.click(screen.getByRole('button', { name: 'Entrar' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('E-mail ou senha inválidos.')
+    const message = await screen.findByText('E-mail ou senha inválidos.')
+    expect(message.closest('[role="alert"]')).not.toBeNull()
     expect(screen.getByRole('button', { name: 'Entrar' })).toBeEnabled()
   })
 

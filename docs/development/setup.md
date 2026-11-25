@@ -60,6 +60,10 @@ Frontend 1:
 - Tema claro/escuro salvo e seguindo o sistema
 - Contrato da API versionado em `docs/api/openapi.json`
 
+Frontend 2:
+- Catálogo: produtos e categorias, com ativar e desativar
+- Componentes de diálogo, aviso (toast), badge e campos
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
