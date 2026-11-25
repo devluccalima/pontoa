@@ -78,6 +78,10 @@ Frontend 5:
   atualizada a cada 10 s, cancelamento com motivo e recebimento
   de pedidos em aberto
 
+Frontend 6:
+- Pedidos a receber de qualquer caixa, histórico de pagamentos
+  do pedido e estorno com motivo (dono)
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
