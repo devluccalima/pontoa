@@ -64,6 +64,7 @@ hora, por exemplo quando um funcionário sai da barraca.
 - O frontend precisa guardar o token; no navegador, ele fica
   acessível a scripts da página (risco de XSS), como em JWT
   guardado no mesmo lugar
+  (onde e como: ADR-0010)
 - Sem limite de tentativas de login no MVP
 - Sem recuperação de senha por e-mail: o dono redefine a
   senha dos operadores

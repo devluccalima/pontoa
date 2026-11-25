@@ -55,6 +55,11 @@ Passo 11:
 Passo 12:
 - Dashboard: vendas, recebimentos, a receber, ticket médio e mais vendidos
 
+Frontend 1:
+- Login, sessão salva no navegador e rotas por papel (ADR-0010)
+- Tema claro/escuro salvo e seguindo o sistema
+- Contrato da API versionado em `docs/api/openapi.json`
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
@@ -84,11 +89,41 @@ npm ci
 
 ### Desenvolvimento
 
+Suba a API (seção Backend) e, em outro terminal:
+
 ```powershell
 npm run dev
 ```
 
-Acesse http://localhost:5173.
+Acesse http://localhost:5173 e entre com o dono criado
+pelo `create-business` (seção Primeiro acesso).
+
+O Vite encaminha `/api` para o backend em
+`http://localhost:8000`, então o navegador fala com um
+único endereço e não há CORS em desenvolvimento. Se a API
+estiver em outra porta, crie `frontend/.env.local`:
+
+```
+PONTOA_API_PROXY_TARGET=http://localhost:8010
+```
+
+### Tipos da API
+
+Os tipos TypeScript das requisições e respostas são gerados
+do contrato `docs/api/openapi.json`, nunca escritos à mão.
+Depois de mudar a API:
+
+```powershell
+cd backend
+python -m app.openapi_export
+cd ../frontend
+npm run gen:api
+```
+
+O teste `test_openapi_contract.py` do backend falha se o
+contrato ficar desatualizado. O `gen:api` baixa uma versão
+fixa do gerador na primeira execução (ele ainda não
+suporta o TypeScript 7 do projeto).
 
 ### Testes
 
@@ -111,16 +146,17 @@ npm run build
 
 ### Arquitetura
 
-O frontend utiliza organização baseada em
-funcionalidades (feature-based).
+- `src/api`: cliente HTTP, erros da API e tipos gerados
+- `src/auth`: sessão (login, logout, token) e contexto do usuário
+- `src/theme`: tema claro/escuro
+- `src/components/ui`: componentes do Design System
+- `src/layouts`, `src/routes`, `src/pages`: estrutura e telas
 
-A navegação é gerenciada pelo React Router.
+Os componentes usam apenas os tokens de
+`docs/design/DESIGN.md`, definidos em `src/styles/global.css`.
 
-Os estilos utilizam Tailwind CSS e tokens
-de identidade visual.
-
-Os módulos de negócio ainda serão integrados
-à API FastAPI nas próximas etapas.
+O build inclui uma política de segurança de conteúdo
+(CSP) que só aceita scripts e estilos do próprio site.
 
 ## Backend
 
