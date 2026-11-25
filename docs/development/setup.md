@@ -52,6 +52,9 @@ Passo 10:
 Passo 11:
 - Pagamentos: Pix, dinheiro e cartão, troco e estorno (ADR-0009)
 
+Passo 12:
+- Dashboard: vendas, recebimentos, a receber, ticket médio e mais vendidos
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
