@@ -10,6 +10,7 @@ from app.modules.businesses.models import Business
 from app.modules.cash_register.models import CashMovement, CashSession
 from app.modules.catalog.models import Category, Product
 from app.modules.orders.models import Order, OrderItem
+from app.modules.payments.models import Payment
 from app.modules.users.models import User
 
 __all__ = [
@@ -20,6 +21,7 @@ __all__ = [
     "Category",
     "Order",
     "OrderItem",
+    "Payment",
     "Product",
     "User",
     "UserSession",

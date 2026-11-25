@@ -29,11 +29,22 @@ STATUS_FLOW = (
 IN_PROGRESS = frozenset({OrderStatus.NEW, OrderStatus.PREPARING, OrderStatus.READY})
 
 
+class PaymentStatus(StrEnum):
+    """Status financeiro, calculado a partir dos pagamentos não estornados."""
+
+    UNPAID = "unpaid"
+    PARTIAL = "partial"
+    PAID = "paid"
+
+
 class Order(BusinessScopedMixin, TimestampMixin, Base):
     __tablename__ = "orders"
     __table_args__ = (
         UniqueConstraint("cash_session_id", "number"),
         CheckConstraint("total >= 0", name="total_not_negative"),
+        CheckConstraint(
+            "paid_amount >= 0 AND paid_amount <= total", name="paid_amount_in_range"
+        ),
         CheckConstraint(
             "(status = 'cancelled') = (cancelled_at IS NOT NULL)",
             name="cancellation_complete",
@@ -51,6 +62,10 @@ class Order(BusinessScopedMixin, TimestampMixin, Base):
         text_enum(OrderStatus, "status"), default=OrderStatus.NEW
     )
     total: Mapped[Decimal]
+    # Soma dos pagamentos não estornados, mantida pelo módulo de pagamentos.
+    paid_amount: Mapped[Decimal] = mapped_column(
+        server_default="0", default=Decimal("0")
+    )
     created_by_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"))
 
     delivered_at: Mapped[datetime | None]
@@ -61,6 +76,18 @@ class Order(BusinessScopedMixin, TimestampMixin, Base):
     items: Mapped[list[OrderItem]] = relationship(
         back_populates="order", lazy="selectin", order_by="OrderItem.id"
     )
+
+    @property
+    def payment_status(self) -> PaymentStatus:
+        if self.paid_amount >= self.total:
+            return PaymentStatus.PAID
+        if self.paid_amount > 0:
+            return PaymentStatus.PARTIAL
+        return PaymentStatus.UNPAID
+
+    @property
+    def amount_due(self) -> Decimal:
+        return self.total - self.paid_amount
 
 
 class OrderItem(IdMixin, Base):

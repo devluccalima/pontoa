@@ -66,6 +66,7 @@ def test_owner_opens_cash_session(
         "opening_amount": "50.00",
         "deposits": "0.00",
         "withdrawals": "0.00",
+        "cash_payments": "0.00",
         "expected_amount": "50.00",
     }
     current = db_client.get(f"{URL}/current", headers=owner_auth).json()
@@ -122,6 +123,7 @@ def test_movements_change_expected_amount(
         "opening_amount": "50.00",
         "deposits": "30.00",
         "withdrawals": "20.50",
+        "cash_payments": "0.00",
         "expected_amount": "59.50",
     }
 

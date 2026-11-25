@@ -46,6 +46,7 @@ class CashSummary(BaseModel):
     opening_amount: Money
     deposits: Money
     withdrawals: Money
+    cash_payments: Money
     expected_amount: SignedMoney
 
 

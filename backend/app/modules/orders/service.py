@@ -134,6 +134,10 @@ def cancel_order(db: Session, user: User, order: Order, data: OrderCancel) -> Or
     """O operador cancela só pedidos novos; o dono cancela em qualquer etapa."""
     if order.status == OrderStatus.CANCELLED:
         raise BusinessRuleError("O pedido já está cancelado.")
+    if order.paid_amount > 0:
+        raise BusinessRuleError(
+            "O pedido tem pagamentos. Estorne os pagamentos antes de cancelar."
+        )
     if user.role != UserRole.OWNER and order.status != OrderStatus.NEW:
         raise ForbiddenError(
             "Depois que o preparo começa, só o dono pode cancelar o pedido."
