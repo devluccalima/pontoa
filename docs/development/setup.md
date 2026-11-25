@@ -64,6 +64,10 @@ Frontend 2:
 - Catálogo: produtos e categorias, com ativar e desativar
 - Componentes de diálogo, aviso (toast), badge e campos
 
+Frontend 3:
+- Caixa: abrir com troco, suprimento, sangria, fechamento com
+  diferença ao vivo e histórico de fechamentos
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme

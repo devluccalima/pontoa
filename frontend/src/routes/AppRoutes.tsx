@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router'
 import { FeaturePlaceholder } from '../components/ui/FeaturePlaceholder'
+import { CashPage } from '../features/cash/CashPage'
 import { ProductsPage } from '../features/catalog/ProductsPage'
 import { AppLayout } from '../layouts/AppLayout'
 import { LoginPage } from '../pages/LoginPage'
@@ -22,10 +23,7 @@ export function AppRoutes() {
             path="pedidos"
             element={<FeaturePlaceholder title="Pedidos" description="Acompanhe o preparo e as entregas." />}
           />
-          <Route
-            path="caixa"
-            element={<FeaturePlaceholder title="Caixa" description="Abertura, movimentações e fechamento." />}
-          />
+          <Route path="caixa" element={<CashPage />} />
 
           <Route element={<RequireRole role="owner" />}>
             <Route
