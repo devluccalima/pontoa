@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router'
 import { FeaturePlaceholder } from '../components/ui/FeaturePlaceholder'
 import { CashPage } from '../features/cash/CashPage'
 import { ProductsPage } from '../features/catalog/ProductsPage'
+import { DashboardPage } from '../features/dashboard/DashboardPage'
 import { OrdersPage } from '../features/orders/OrdersPage'
 import { PosPage } from '../features/pos/PosPage'
 import { AppLayout } from '../layouts/AppLayout'
@@ -22,10 +23,7 @@ export function AppRoutes() {
           <Route path="caixa" element={<CashPage />} />
 
           <Route element={<RequireRole role="owner" />}>
-            <Route
-              path="painel"
-              element={<FeaturePlaceholder title="Painel" description="Vendas e recebimentos do período." />}
-            />
+            <Route path="painel" element={<DashboardPage />} />
             <Route path="produtos" element={<ProductsPage />} />
             <Route
               path="equipe"

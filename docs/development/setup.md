@@ -82,6 +82,10 @@ Frontend 6:
 - Pedidos a receber de qualquer caixa, histórico de pagamentos
   do pedido e estorno com motivo (dono)
 
+Frontend 7:
+- Painel do dono: vendas, recebido, a receber, ticket médio,
+  cancelados, recebido por forma e mais vendidos, por período
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme

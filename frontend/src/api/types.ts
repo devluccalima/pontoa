@@ -30,3 +30,5 @@ export type OrderStatus = Schemas['OrderStatus']
 export type PaymentStatus = Schemas['PaymentStatus']
 export type Payment = Schemas['PaymentRead']
 export type PaymentMethod = Schemas['PaymentMethod']
+
+export type Dashboard = Schemas['DashboardRead']
