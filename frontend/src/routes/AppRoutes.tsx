@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router'
 import { FeaturePlaceholder } from '../components/ui/FeaturePlaceholder'
+import { ProductsPage } from '../features/catalog/ProductsPage'
 import { AppLayout } from '../layouts/AppLayout'
 import { LoginPage } from '../pages/LoginPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
@@ -31,10 +32,7 @@ export function AppRoutes() {
               path="painel"
               element={<FeaturePlaceholder title="Painel" description="Vendas e recebimentos do período." />}
             />
-            <Route
-              path="produtos"
-              element={<FeaturePlaceholder title="Produtos" description="Catálogo e categorias." />}
-            />
+            <Route path="produtos" element={<ProductsPage />} />
             <Route
               path="equipe"
               element={<FeaturePlaceholder title="Equipe" description="Pessoas com acesso ao sistema." />}

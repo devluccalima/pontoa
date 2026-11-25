@@ -588,7 +588,7 @@ export interface components {
              * Position
              * @default 0
              */
-            position: number;
+            position?: number;
         };
         /** CategoryRead */
         CategoryRead: {
@@ -689,7 +689,7 @@ export interface components {
              * @default bearer
              * @constant
              */
-            token_type: "bearer";
+            token_type?: "bearer";
             user: components["schemas"]["UserRead"];
         };
         /** MeResponse */
@@ -724,7 +724,7 @@ export interface components {
              * Quantity
              * @default 1
              */
-            quantity: number;
+            quantity?: number;
         };
         /** OrderItemRead */
         OrderItemRead: {
@@ -885,7 +885,7 @@ export interface components {
              * Position
              * @default 0
              */
-            position: number;
+            position?: number;
             /** Price */
             price: number | string;
         };
@@ -959,7 +959,7 @@ export interface components {
             /** Password */
             password: string;
             /** @default operator */
-            role: components["schemas"]["UserRole"];
+            role?: components["schemas"]["UserRole"];
         };
         /** UserRead */
         UserRead: {
