@@ -107,18 +107,6 @@
   --shadow-float: var(--elevation-float);
 }
 
-/*
- * Aliases temporários para os componentes atuais.
- * Remover quando os componentes forem migrados aos tokens novos.
- */
-:root {
-  --app-bg: var(--bg);
-  --app-surface: var(--surface);
-  --app-text: var(--text);
-  --app-muted: var(--muted);
-  --app-border: var(--hairline);
-}
-
 @layer base {
   html {
     min-width: 320px;

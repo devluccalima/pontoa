@@ -45,4 +45,20 @@ describe('Button', () => {
       }),
     ).toBeDisabled()
   })
+
+  it('blocks repeated taps while loading', () => {
+    const handleClick = vi.fn()
+
+    render(
+      <Button loading loadingText="Finalizando…" onClick={handleClick}>
+        Finalizar
+      </Button>,
+    )
+
+    const button = screen.getByRole('button', { name: 'Finalizando…' })
+    fireEvent.click(button)
+    expect(button).toBeDisabled()
+    expect(button).toHaveAttribute('aria-busy', 'true')
+    expect(handleClick).not.toHaveBeenCalled()
+  })
 })

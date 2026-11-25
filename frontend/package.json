@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "gen:api": "npx --yes -p typescript@5.9.3 -p openapi-typescript@7.13.0 openapi-typescript ../docs/api/openapi.json -o src/api/schema.d.ts"
   },
   "dependencies": {
     "@fontsource-variable/ibm-plex-sans": "^5.3.0",
