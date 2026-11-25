@@ -4,7 +4,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
-from app.core.schemas import Money
+from app.core.schemas import Money, RequestBody
 from app.modules.orders.models import OrderStatus, PaymentStatus
 
 ItemNotes = Annotated[str, StringConstraints(strip_whitespace=True, max_length=120)]
@@ -15,23 +15,23 @@ CancelReason = Annotated[
 ]
 
 
-class OrderItemCreate(BaseModel):
+class OrderItemCreate(RequestBody):
     product_id: uuid.UUID
     quantity: Annotated[int, Field(ge=1, le=99)] = 1
     notes: ItemNotes | None = None
 
 
-class OrderCreate(BaseModel):
+class OrderCreate(RequestBody):
     items: Annotated[list[OrderItemCreate], Field(min_length=1, max_length=50)]
     customer_name: CustomerName | None = None
     notes: OrderNotes | None = None
 
 
-class OrderStatusChange(BaseModel):
+class OrderStatusChange(RequestBody):
     status: OrderStatus
 
 
-class OrderCancel(BaseModel):
+class OrderCancel(RequestBody):
     reason: CancelReason
 
 

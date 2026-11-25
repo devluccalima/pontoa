@@ -3,11 +3,12 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from app.core.schemas import RequestBody
 from app.modules.businesses.schemas import BusinessRead
 from app.modules.users.schemas import PASSWORD_MAX_LENGTH, UserRead
 
 
-class LoginRequest(BaseModel):
+class LoginRequest(RequestBody):
     email: str = Field(min_length=1, max_length=254)
     password: str = Field(min_length=1, max_length=PASSWORD_MAX_LENGTH)
 

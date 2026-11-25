@@ -178,6 +178,30 @@ def test_invalid_payments_are_rejected(
     assert pay(db_client, operator_auth, order, **body).status_code == 422
 
 
+def test_misspelled_field_is_rejected_instead_of_ignored(
+    db_client: TestClient,
+    operator_auth: dict[str, str],
+    cash: CashSession,
+    arepa: Product,
+) -> None:
+    order = place(db_client, operator_auth, arepa)
+
+    response = pay(
+        db_client,
+        operator_auth,
+        order,
+        method="cash",
+        amount="37.00",
+        recived_amount="50.00",
+    )
+
+    assert response.status_code == 422
+    [detail] = response.json()["error"]["details"]
+    assert detail["field"] == "body.recived_amount"
+    assert detail["type"] == "extra_forbidden"
+    assert get_order(db_client, operator_auth, order)["payment_status"] == "unpaid"
+
+
 def test_order_can_be_delivered_before_payment(
     db_client: TestClient,
     operator_auth: dict[str, str],

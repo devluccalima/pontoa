@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Annotated, ClassVar, Self
 
-from pydantic import BaseModel, Field, PlainSerializer, model_validator
+from pydantic import BaseModel, ConfigDict, Field, PlainSerializer, model_validator
 
 MONEY_MAX_DIGITS = 10
 
@@ -27,7 +27,17 @@ SignedMoney = Annotated[Decimal, _as_text]
 """Valor calculado que pode ser negativo, como a diferença do caixa."""
 
 
-class PartialUpdate(BaseModel):
+class RequestBody(BaseModel):
+    """Corpo de requisição: campos desconhecidos são recusados com 422.
+
+    Sem isso, um nome digitado errado seria ignorado em silêncio
+    e o dado simplesmente não seria gravado.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class PartialUpdate(RequestBody):
     """Corpo de PATCH: campos ausentes não mudam.
 
     Só os campos em `nullable_fields` aceitam `null`, para limpar o valor.
