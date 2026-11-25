@@ -1,10 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router'
-import { FeaturePlaceholder } from '../components/ui/FeaturePlaceholder'
 import { CashPage } from '../features/cash/CashPage'
 import { ProductsPage } from '../features/catalog/ProductsPage'
 import { DashboardPage } from '../features/dashboard/DashboardPage'
 import { OrdersPage } from '../features/orders/OrdersPage'
 import { PosPage } from '../features/pos/PosPage'
+import { TeamPage } from '../features/team/TeamPage'
 import { AppLayout } from '../layouts/AppLayout'
 import { LoginPage } from '../pages/LoginPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
@@ -25,10 +25,7 @@ export function AppRoutes() {
           <Route element={<RequireRole role="owner" />}>
             <Route path="painel" element={<DashboardPage />} />
             <Route path="produtos" element={<ProductsPage />} />
-            <Route
-              path="equipe"
-              element={<FeaturePlaceholder title="Equipe" description="Pessoas com acesso ao sistema." />}
-            />
+            <Route path="equipe" element={<TeamPage />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />
