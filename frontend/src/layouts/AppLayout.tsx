@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 import { LogOut, Menu, Moon, Sun, X } from 'lucide-react'
 import { useAuth, useSession } from '../auth/useAuth'
+import { CartProvider } from '../features/pos/CartProvider'
 import { Logo } from '../components/ui/Logo'
 import { ThemeToggle } from '../theme/ThemeToggle'
 import { useTheme } from '../theme/useTheme'
@@ -22,6 +23,7 @@ export function AppLayout() {
   const items = navigationFor(user.role)
 
   return (
+    <CartProvider key={user.id} userId={user.id}>
     <div className="min-h-dvh bg-bg md:flex">
       <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col bg-brand px-3 py-5 text-white md:flex lg:w-60 lg:px-4">
         <div className="mb-8 flex justify-center lg:justify-start lg:px-2">
@@ -58,6 +60,7 @@ export function AppLayout() {
 
       <MobileNav items={items} />
     </div>
+    </CartProvider>
   )
 }
 

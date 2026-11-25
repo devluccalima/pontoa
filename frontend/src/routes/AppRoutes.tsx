@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router'
 import { FeaturePlaceholder } from '../components/ui/FeaturePlaceholder'
 import { CashPage } from '../features/cash/CashPage'
 import { ProductsPage } from '../features/catalog/ProductsPage'
+import { PosPage } from '../features/pos/PosPage'
 import { AppLayout } from '../layouts/AppLayout'
 import { LoginPage } from '../pages/LoginPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
@@ -15,10 +16,7 @@ export function AppRoutes() {
       <Route element={<RequireAuth />}>
         <Route element={<AppLayout />}>
           <Route index element={<Navigate to="/pdv" replace />} />
-          <Route
-            path="pdv"
-            element={<FeaturePlaceholder title="Vender" description="Monte a comanda e finalize o pedido." />}
-          />
+          <Route path="pdv" element={<PosPage />} />
           <Route
             path="pedidos"
             element={<FeaturePlaceholder title="Pedidos" description="Acompanhe o preparo e as entregas." />}

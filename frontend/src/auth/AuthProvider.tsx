@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { ApiError, apiRequest, onUnauthorized } from '../api/client'
 import type { LoginResponse, MeResponse } from '../api/types'
+import { clearDrafts } from '../lib/sessionDraft'
 import { clearToken, readToken, saveToken } from './tokenStore'
 import { AuthContext } from './useAuth'
 import type { AuthState } from './useAuth'
@@ -53,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Mesmo sem conexão, o aparelho sai; a sessão expira sozinha no servidor.
     }
     clearToken()
+    clearDrafts()
     // Dados do usuário anterior não podem aparecer para quem entrar depois no aparelho.
     queryClient.clear()
     setState({ status: 'anonymous' })
