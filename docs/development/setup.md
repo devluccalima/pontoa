@@ -86,6 +86,9 @@ Frontend 7:
 - Painel do dono: vendas, recebido, a receber, ticket médio,
   cancelados, recebido por forma e mais vendidos, por período
 
+Frontend 8:
+- Equipe: cadastrar pessoas, trocar papel e senha, tirar acesso
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme

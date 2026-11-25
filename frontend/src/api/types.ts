@@ -32,3 +32,5 @@ export type Payment = Schemas['PaymentRead']
 export type PaymentMethod = Schemas['PaymentMethod']
 
 export type Dashboard = Schemas['DashboardRead']
+export type UserCreate = Schemas['UserCreate']
+export type UserUpdate = Schemas['UserUpdate']

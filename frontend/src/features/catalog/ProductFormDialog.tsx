@@ -9,7 +9,8 @@ import { SelectField, SwitchField, TextAreaField } from '../../components/ui/fie
 import { TextField } from '../../components/ui/TextField'
 import { useToast } from '../../components/ui/useToast'
 import { parseMoneyInput, toMoneyInput } from '../../lib/money'
-import { changedFields, useSaveProduct } from './api'
+import { changedFields } from '../../lib/changedFields'
+import { useSaveProduct } from './api'
 
 type Props = {
   /** Produto em edição; ausente para cadastrar um novo. */
