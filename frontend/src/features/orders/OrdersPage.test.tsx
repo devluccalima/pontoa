@@ -2,9 +2,10 @@ import { fireEvent, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import type { CashSession, Order } from '../../api/types'
 import { saveToken } from '../../auth/tokenStore'
-import { buildOrder } from '../../test/builders'
+import { buildOrder, buildPayment } from '../../test/builders'
 import { apiError, business, fakeApi, makeUser } from '../../test/fakeApi'
 import { renderApp } from '../../test/renderApp'
+import { textMatcher } from '../../test/textMatcher'
 
 const item = (name: string, quantity = 1, notes: string | null = null) => ({
   id: `i-${name}`,
@@ -26,6 +27,7 @@ function ordersApi(role: 'owner' | 'operator', orders: Order[], extra: Parameter
     'GET /auth/me': () => ({ body: { user: makeUser(role), business } }),
     'GET /cash-sessions/current': () => ({ body: { session: cashOpen ? ({ id: 's1' } as CashSession) : null } }),
     'GET /orders': () => ({ body: orders }),
+    'GET /orders/pending-payments': () => ({ body: orders.filter((order) => order.payment_status !== 'paid' && order.status !== 'cancelled') }),
     ...extra,
   })
 }
@@ -102,5 +104,55 @@ describe('OrdersPage', () => {
     renderApp('/pedidos')
 
     expect(await screen.findByText(/Não há caixa aberto/)).toBeInTheDocument()
+  })
+
+  it('lists everything still to receive, including older cash sessions', async () => {
+    const older = buildOrder({ id: 'o9', number: 7, cash_session_id: 'old', status: 'delivered', customer_name: 'Rita' })
+    ordersApi('operator', [newOrder], { 'GET /orders/pending-payments': () => ({ body: [older, newOrder] }) })
+    renderApp('/pedidos')
+
+    fireEvent.click(await screen.findByRole('button', { name: 'A receber (2)' }))
+    const row = screen.getByText('#7').closest('li')!
+    expect(within(row).getByText('Rita', { exact: false })).toBeInTheDocument()
+
+    fireEvent.click(within(row).getByRole('button', { name: 'Receber' }))
+    expect(await screen.findByRole('dialog', { name: 'Receber pedido #7' })).toBeInTheDocument()
+  })
+})
+
+describe('order payments', () => {
+  const partial = buildOrder({ id: 'o4', number: 4, payment_status: 'partial', paid_amount: '20.00', amount_due: '17.00' })
+  const pix = buildPayment({ id: 'pay1', order_id: 'o4', amount: '20.00' })
+
+  function paymentsApi(role: 'owner' | 'operator') {
+    return ordersApi(role, [partial], {
+      'GET /orders/o4': () => ({ body: partial }),
+      'GET /orders/o4/payments': () => ({ body: [pix] }),
+      'POST /payments/pay1/void': ({ body }) => ({ body: { ...pix, is_voided: true, void_reason: (body as { reason: string }).reason } }),
+    })
+  }
+
+  it('lets the owner void a payment with a reason', async () => {
+    const { calls } = paymentsApi('owner')
+    renderApp('/pedidos')
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver pagamentos' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Pagamentos do pedido #4' })
+    fireEvent.click(await within(dialog).findByRole('button', { name: 'Estornar' }))
+    fireEvent.change(within(dialog).getByLabelText('Motivo do estorno'), { target: { value: 'Cobrado duas vezes' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Estornar pagamento' }))
+
+    expect(await screen.findByText(textMatcher('Pagamento de R$ 20,00 estornado.'))).toBeInTheDocument()
+    expect(calls.find((call) => call.path === '/payments/pay1/void')?.body).toEqual({ reason: 'Cobrado duas vezes' })
+  })
+
+  it('shows payments to operators without the void action', async () => {
+    paymentsApi('operator')
+    renderApp('/pedidos')
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver pagamentos' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Pagamentos do pedido #4' })
+    expect(await within(dialog).findByText('Pix')).toBeInTheDocument()
+    expect(within(dialog).queryByRole('button', { name: 'Estornar' })).not.toBeInTheDocument()
   })
 })

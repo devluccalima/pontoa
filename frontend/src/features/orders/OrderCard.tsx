@@ -12,6 +12,7 @@ type Props = {
   advancing: boolean
   onAdvance: () => void
   onReceive: () => void
+  onPayments: () => void
   onCancel: () => void
 }
 
@@ -23,7 +24,7 @@ export function PaymentBadge({ order }: { order: Order }) {
   )
 }
 
-export function OrderCard({ order, now, canCancel, advancing, onAdvance, onReceive, onCancel }: Props) {
+export function OrderCard({ order, now, canCancel, advancing, onAdvance, onReceive, onPayments, onCancel }: Props) {
   const next = NEXT_STEP[order.status]
   const owes = toCents(order.amount_due) > 0
   return (
@@ -58,6 +59,7 @@ export function OrderCard({ order, now, canCancel, advancing, onAdvance, onRecei
         <span className="text-muted">Total</span>
         <span className="text-lg font-semibold tabular-nums">{formatMoney(order.total)}</span>
       </div>
+      {toCents(order.paid_amount) > 0 ? <PaymentsLink onClick={onPayments} /> : null}
 
       <div className="flex flex-col gap-2">
         {next ? (
@@ -87,5 +89,18 @@ export function OrderCard({ order, now, canCancel, advancing, onAdvance, onRecei
         ) : null}
       </div>
     </article>
+  )
+}
+
+/** Abre o histórico de pagamentos do pedido (e o estorno, para o dono). */
+export function PaymentsLink({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="-my-2 min-h-12 self-start rounded-sm font-medium underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+    >
+      Ver pagamentos
+    </button>
   )
 }

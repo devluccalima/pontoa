@@ -10,17 +10,19 @@ import { Button } from '../../components/ui/Button'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { DelayedSpinner, EmptyState, LoadError } from '../../components/ui/QueryState'
 import { useToast } from '../../components/ui/useToast'
-import { formatTime } from '../../lib/datetime'
+import { formatDateTime, formatTime } from '../../lib/datetime'
 import { formatMoney, toCents } from '../../lib/money'
 import { useNow } from '../../lib/useNow'
 import { useCurrentCash } from '../cash/api'
+import { usePendingPayments } from '../payments/api'
+import { OrderPaymentsDialog } from '../payments/OrderPaymentsDialog'
 import { PaymentDialog } from '../payments/PaymentDialog'
 import { useChangeStatus, useCurrentOrders } from './api'
 import { CancelOrderDialog } from './CancelOrderDialog'
-import { OrderCard, PaymentBadge } from './OrderCard'
+import { OrderCard, PaymentBadge, PaymentsLink } from './OrderCard'
 import { NEXT_STEP, STATUS_LABELS } from './status'
 
-type View = 'queue' | 'delivered' | 'cancelled'
+type View = 'queue' | 'pending' | 'delivered' | 'cancelled'
 
 const COLUMNS: { status: OrderStatus; title: string }[] = [
   { status: 'new', title: 'Novos' },
@@ -33,8 +35,10 @@ export function OrdersPage() {
   const cash = useCurrentCash()
   const orders = useCurrentOrders()
   const [view, setView] = useState<View>('queue')
+  const pending = usePendingPayments()
   const [receiving, setReceiving] = useState<Order | null>(null)
   const [cancelling, setCancelling] = useState<Order | null>(null)
+  const [inspecting, setInspecting] = useState<Order | null>(null)
 
   const all = orders.data ?? []
   const byStatus = (status: OrderStatus) => all.filter((order) => order.status === status)
@@ -46,6 +50,7 @@ export function OrdersPage() {
 
   const views: { id: View; label: string; count: number }[] = [
     { id: 'queue', label: 'Em andamento', count: queueCount },
+    { id: 'pending', label: 'A receber', count: pending.data?.length ?? 0 },
     { id: 'delivered', label: 'Entregues', count: delivered.length },
     { id: 'cancelled', label: 'Cancelados', count: cancelled.length },
   ]
@@ -97,14 +102,18 @@ export function OrdersPage() {
                 columns={COLUMNS.map((column) => ({ ...column, orders: byStatus(column.status) }))}
                 canCancel={canCancel}
                 onReceive={setReceiving}
+                onPayments={setInspecting}
                 onCancel={setCancelling}
               />
             )
+          ) : view === 'pending' ? (
+            <PendingList query={pending} onReceive={setReceiving} onPayments={setInspecting} />
           ) : (
             <ClosedList
               orders={view === 'delivered' ? delivered : cancelled}
               emptyTitle={view === 'delivered' ? 'Nenhum pedido entregue ainda' : 'Nenhum pedido cancelado'}
               onReceive={setReceiving}
+              onPayments={setInspecting}
             />
           )}
         </>
@@ -112,6 +121,16 @@ export function OrdersPage() {
 
       {receiving ? <PaymentDialog order={receiving} onClose={() => setReceiving(null)} /> : null}
       {cancelling ? <CancelOrderDialog order={cancelling} onClose={() => setCancelling(null)} /> : null}
+      {inspecting ? (
+        <OrderPaymentsDialog
+          order={inspecting}
+          onClose={() => setInspecting(null)}
+          onReceive={(order) => {
+            setInspecting(null)
+            setReceiving(order)
+          }}
+        />
+      ) : null}
     </section>
   )
 }
@@ -120,11 +139,13 @@ function Queue({
   columns,
   canCancel,
   onReceive,
+  onPayments,
   onCancel,
 }: {
   columns: { status: OrderStatus; title: string; orders: Order[] }[]
   canCancel: (order: Order) => boolean
   onReceive: (order: Order) => void
+  onPayments: (order: Order) => void
   onCancel: (order: Order) => void
 }) {
   const now = useNow()
@@ -164,6 +185,7 @@ function Queue({
                 advancing={changeStatus.isPending && changeStatus.variables?.id === order.id}
                 onAdvance={() => advance(order)}
                 onReceive={() => onReceive(order)}
+                onPayments={() => onPayments(order)}
                 onCancel={() => onCancel(order)}
               />
             ))
@@ -174,7 +196,17 @@ function Queue({
   )
 }
 
-function ClosedList({ orders, emptyTitle, onReceive }: { orders: Order[]; emptyTitle: string; onReceive: (order: Order) => void }) {
+function ClosedList({
+  orders,
+  emptyTitle,
+  onReceive,
+  onPayments,
+}: {
+  orders: Order[]
+  emptyTitle: string
+  onReceive: (order: Order) => void
+  onPayments: (order: Order) => void
+}) {
   const { business } = useSession()
   if (orders.length === 0) return <EmptyState icon={<ClipboardList size={28} aria-hidden />} title={emptyTitle} />
   return (
@@ -197,11 +229,57 @@ function ClosedList({ orders, emptyTitle, onReceive }: { orders: Order[]; emptyT
           <div className="flex items-center gap-3">
             <span className="font-semibold tabular-nums">{formatMoney(order.total)}</span>
             {order.status === 'cancelled' ? <Badge tone="danger">Cancelado</Badge> : <PaymentBadge order={order} />}
+            {toCents(order.paid_amount) > 0 ? <PaymentsLink onClick={() => onPayments(order)} /> : null}
             {order.status !== 'cancelled' && toCents(order.amount_due) > 0 ? (
               <Button variant="secondary" onClick={() => onReceive(order)}>
                 Receber
               </Button>
             ) : null}
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function PendingList({
+  query,
+  onReceive,
+  onPayments,
+}: {
+  query: ReturnType<typeof usePendingPayments>
+  onReceive: (order: Order) => void
+  onPayments: (order: Order) => void
+}) {
+  const { business } = useSession()
+  if (query.isPending) return <DelayedSpinner label="Carregando pedidos a receber" />
+  if (query.error) return <LoadError error={query.error} onRetry={() => void query.refetch()} />
+  if (query.data.length === 0) {
+    return (
+      <EmptyState icon={<ClipboardList size={28} aria-hidden />} title="Nada a receber">
+        Todos os pedidos estão pagos.
+      </EmptyState>
+    )
+  }
+  return (
+    <ul className="divide-y divide-hairline rounded-md border border-hairline bg-surface">
+      {query.data.map((order) => (
+        <li key={order.id} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
+          <div className="min-w-0">
+            <p className="font-semibold">
+              <span className="tabular-nums">#{order.number}</span>
+              {order.customer_name ? <span className="font-normal text-muted"> · {order.customer_name}</span> : null}
+            </p>
+            <p className="text-sm text-muted">
+              {formatDateTime(order.created_at, business.timezone)} · {STATUS_LABELS[order.status]} · Total {formatMoney(order.total)}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="font-semibold text-accent-text tabular-nums">Falta {formatMoney(order.amount_due)}</span>
+            {toCents(order.paid_amount) > 0 ? <PaymentsLink onClick={() => onPayments(order)} /> : null}
+            <Button variant="secondary" onClick={() => onReceive(order)}>
+              Receber
+            </Button>
           </div>
         </li>
       ))}
