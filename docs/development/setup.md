@@ -73,6 +73,11 @@ Frontend 4:
   cliente, pedido e recebimento (Pix, dinheiro com troco, cartão,
   divisão entre formas)
 
+Frontend 5:
+- Pedidos: fila de preparo (novo, preparando, pronto, entregue)
+  atualizada a cada 10 s, cancelamento com motivo e recebimento
+  de pedidos em aberto
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme

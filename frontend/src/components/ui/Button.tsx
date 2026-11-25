@@ -2,7 +2,8 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { Spinner } from './Spinner'
 
 /** DESIGN.md, seção 5 "Botão". */
-type ButtonVariant = 'accent' | 'primary' | 'secondary' | 'danger'
+/** `quiet-danger`: secundário com texto vermelho, para abrir uma confirmação destrutiva. */
+type ButtonVariant = 'accent' | 'primary' | 'secondary' | 'quiet-danger' | 'danger'
 type ButtonSize = 'md' | 'lg'
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -20,6 +21,7 @@ const variants: Record<ButtonVariant, string> = {
   accent: 'bg-accent text-brand active:bg-accent-pressed',
   primary: 'bg-primary text-on-primary active:bg-primary-pressed',
   secondary: 'border border-border-strong bg-surface text-text active:bg-bg',
+  'quiet-danger': 'border border-border-strong bg-surface text-danger active:bg-danger-bg',
   danger: 'bg-danger text-on-danger active:brightness-95',
 }
 
