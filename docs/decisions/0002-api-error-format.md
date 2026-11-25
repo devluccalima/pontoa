@@ -26,6 +26,12 @@ Os módulos de negócio lançam exceções de domínio
 (`NotFoundError` → 404, `BusinessRuleError` → 409),
 traduzidas para HTTP por handlers centrais.
 
+Corpos de requisição recusam campos desconhecidos com 422
+(`type: "extra_forbidden"`), pela classe `RequestBody`. Um
+nome digitado errado vira erro visível, em vez de ser
+ignorado e deixar de gravar o dado. Um teste percorre o
+OpenAPI e falha se algum corpo aceitar campos extras.
+
 Registros de outro estabelecimento retornam 404,
 nunca 403, para não revelar sua existência.
 

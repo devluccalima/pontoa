@@ -5,7 +5,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, StringConstraints
 
-from app.core.schemas import Money, PositiveMoney, SignedMoney
+from app.core.schemas import Money, PositiveMoney, RequestBody, SignedMoney
 from app.modules.cash_register.models import CashMovementKind
 
 Notes = Annotated[str, StringConstraints(strip_whitespace=True, max_length=500)]
@@ -14,16 +14,16 @@ Description = Annotated[
 ]
 
 
-class CashSessionOpen(BaseModel):
+class CashSessionOpen(RequestBody):
     opening_amount: Money
 
 
-class CashSessionClose(BaseModel):
+class CashSessionClose(RequestBody):
     counted_amount: Money
     notes: Notes | None = None
 
 
-class CashMovementCreate(BaseModel):
+class CashMovementCreate(RequestBody):
     kind: CashMovementKind
     amount: PositiveMoney
     description: Description

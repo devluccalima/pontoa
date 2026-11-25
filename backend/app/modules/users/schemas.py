@@ -4,7 +4,7 @@ from typing import Annotated
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, EmailStr, Field
 
-from app.core.schemas import PartialUpdate
+from app.core.schemas import PartialUpdate, RequestBody
 from app.modules.users.models import UserRole
 
 PASSWORD_MIN_LENGTH = 8
@@ -33,7 +33,7 @@ class UserRead(BaseModel):
     created_at: datetime
 
 
-class UserCreate(BaseModel):
+class UserCreate(RequestBody):
     name: Name
     email: Email
     password: Password

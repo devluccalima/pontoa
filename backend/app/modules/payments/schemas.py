@@ -4,7 +4,7 @@ from typing import Annotated, Self
 
 from pydantic import BaseModel, ConfigDict, StringConstraints, model_validator
 
-from app.core.schemas import Money, PositiveMoney
+from app.core.schemas import Money, PositiveMoney, RequestBody
 from app.modules.payments.models import PaymentMethod
 
 VoidReason = Annotated[
@@ -12,7 +12,7 @@ VoidReason = Annotated[
 ]
 
 
-class PaymentCreate(BaseModel):
+class PaymentCreate(RequestBody):
     method: PaymentMethod
     amount: PositiveMoney
     # Só para dinheiro: quanto o cliente entregou, para calcular o troco.
@@ -29,7 +29,7 @@ class PaymentCreate(BaseModel):
         return self
 
 
-class PaymentVoid(BaseModel):
+class PaymentVoid(RequestBody):
     reason: VoidReason
 
 

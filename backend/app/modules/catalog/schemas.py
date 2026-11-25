@@ -3,7 +3,7 @@ from typing import Annotated, ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
-from app.core.schemas import Money, PartialUpdate
+from app.core.schemas import Money, PartialUpdate, RequestBody
 
 CategoryName = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=60)
@@ -24,7 +24,7 @@ class CategoryRead(BaseModel):
     active: bool
 
 
-class CategoryCreate(BaseModel):
+class CategoryCreate(RequestBody):
     name: CategoryName
     position: Position = 0
 
@@ -47,7 +47,7 @@ class ProductRead(BaseModel):
     active: bool
 
 
-class ProductCreate(BaseModel):
+class ProductCreate(RequestBody):
     name: ProductName
     price: Money
     category_id: uuid.UUID | None = None
