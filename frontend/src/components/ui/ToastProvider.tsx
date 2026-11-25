@@ -30,8 +30,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext value={value}>
       {children}
-      {/* Regiões sempre presentes, para leitores de tela anunciarem a mudança. */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-50 flex justify-center px-4 md:inset-x-auto md:right-6 md:bottom-6 md:justify-end">
+      {/* Regiões sempre presentes, para leitores de tela anunciarem a mudança.
+          No celular, acima da navegação e da barra da comanda. */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(8.5rem+env(safe-area-inset-bottom))] z-50 flex justify-center px-4 md:inset-x-auto md:right-6 md:bottom-6 md:justify-end">
         <div aria-live="polite" className="contents">
           {toast && toast.tone !== 'error' ? <ToastView toast={toast} onClose={dismissToast} /> : null}
         </div>

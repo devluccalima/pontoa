@@ -68,6 +68,11 @@ Frontend 3:
 - Caixa: abrir com troco, suprimento, sangria, fechamento com
   diferença ao vivo e histórico de fechamentos
 
+Frontend 4:
+- Vender: grade de produtos, comanda com observações e nome do
+  cliente, pedido e recebimento (Pix, dinheiro com troco, cartão,
+  divisão entre formas)
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
