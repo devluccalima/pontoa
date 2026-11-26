@@ -41,10 +41,23 @@ fix(payments): correct paid amount
 docs(api): document authentication
 test(orders): add order validation tests
 
+## Integração contínua
+
+Todo PR e todo push na main rodam o CI
+(`.github/workflows/ci.yml`), em três partes:
+
+- Backend: lockfile, Ruff, testes (com o
+  contrato da API) e `alembic check`
+- Frontend: tipos da API em dia, lint,
+  typecheck, testes e build
+- Imagem da API: build, migrações e
+  `/health/ready` com banco real
+
 ## Revisão
 
 Antes do merge:
 
+- CI verde
 - Alterações coerentes com o escopo
 - Sem credenciais versionadas
 - Código formatado
@@ -62,7 +75,8 @@ o histórico da main organizado.
 Evitar commits diretos na main.
 
 Configurar regras de proteção quando
-o plano e o repositório permitirem.
+o plano e o repositório permitirem,
+exigindo os três jobs do CI.
 
 ## Definição de pronto
 
