@@ -146,6 +146,8 @@ não são usados: perdem legibilidade sob luz forte.
   inquebrável entre símbolo e valor.
 - Hierarquia por peso e tamanho, não por cor: texto secundário
   usa `muted`, nunca cores de estado.
+- Campo opcional não preenchido aparece como travessão (`—`),
+  nunca em branco, para ficar claro que não há valor.
 
 ## 4. Espaçamento, formas e layout
 
@@ -247,6 +249,10 @@ para evitar pedidos ou pagamentos duplicados.
 
 - O cartão inteiro é a área de toque; um toque adiciona uma unidade.
 - Altura mínima de 84px; nomes longos quebram em até duas linhas.
+- Cartões da mesma fileira têm a mesma altura e o preço fica na base,
+  alinhado entre eles.
+- A borda de 2px do selecionado não desloca o conteúdo (1px de borda
+  + 1px de contorno interno).
 - O marcador de quantidade tem no mínimo 28px e borda na cor `bg`.
 
 ### Item da comanda
