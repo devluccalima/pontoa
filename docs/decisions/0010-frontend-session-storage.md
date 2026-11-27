@@ -1,6 +1,6 @@
 # ADR-0010 — Sessão no frontend
 
-- Status: Aceita (provisória, revisar na escolha do deploy)
+- Status: Aceita (provisória; o deploy do ADR-0011 permite trocar por cookie HttpOnly)
 - Data: 2026-11-25
 
 ## Contexto
