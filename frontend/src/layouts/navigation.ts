@@ -2,6 +2,7 @@ import {
   ChartNoAxesCombined,
   ClipboardList,
   Package,
+  Settings,
   ShoppingCart,
   Users,
   Wallet,
@@ -24,6 +25,7 @@ export const NAVIGATION: NavItem[] = [
   { label: 'Painel', path: '/painel', icon: ChartNoAxesCombined, ownerOnly: true },
   { label: 'Produtos', path: '/produtos', icon: Package, ownerOnly: true },
   { label: 'Equipe', path: '/equipe', icon: Users, ownerOnly: true },
+  { label: 'Estabelecimento', path: '/estabelecimento', icon: Settings, ownerOnly: true },
 ]
 
 export const MOBILE_BAR_SIZE = 4
