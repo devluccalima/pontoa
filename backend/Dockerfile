@@ -9,9 +9,15 @@ WORKDIR /app
 
 RUN useradd --create-home --uid 10001 pontoa
 
+# Dependências primeiro, com versões e hashes fixos (requirements.lock):
+# mudar só o código não invalida esta camada do cache.
+COPY requirements.lock ./
+RUN pip install --require-hashes -r requirements.lock
+
 COPY pyproject.toml ./
 COPY app ./app
-RUN pip install . \
+RUN pip install --no-deps . \
+    && pip check \
     && rm -rf build *.egg-info
 
 COPY alembic.ini ./

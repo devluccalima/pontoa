@@ -89,6 +89,10 @@ Frontend 7:
 Frontend 8:
 - Equipe: cadastrar pessoas, trocar papel e senha, tirar acesso
 
+Infra 1:
+- CI no GitHub Actions (backend, frontend e imagem da API)
+- Dependências do backend travadas em lockfile com hashes
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
@@ -208,7 +212,8 @@ cd backend
 py -3.15 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
+python -m pip install -r requirements-dev.lock
+python -m pip install --no-deps -e .
 Copy-Item .env.example .env
 ```
 
@@ -233,6 +238,29 @@ python -m uvicorn app.main:create_app --factory --reload
 
 Use sempre `python -m uvicorn` com o ambiente virtual ativo,
 para não executar um Uvicorn instalado globalmente.
+
+### Dependências (lockfile)
+
+As versões exatas, com hashes, ficam em dois arquivos
+gerados a partir do `pyproject.toml`:
+
+- `requirements.lock`: só o que a API precisa (imagem Docker)
+- `requirements-dev.lock`: o mesmo, mais testes e Ruff (CI e máquina local)
+
+Os dois valem para Windows e Linux. Nunca edite à mão.
+Para adicionar ou atualizar uma dependência, altere o
+`pyproject.toml` e regenere (o `uv` só é preciso aqui):
+
+```powershell
+python -m pip install uv
+uv pip compile pyproject.toml --universal --python-version 3.15 --generate-hashes -o requirements.lock
+uv pip compile pyproject.toml --extra dev --universal --python-version 3.15 --generate-hashes -o requirements-dev.lock
+python -m pip install -r requirements-dev.lock
+```
+
+Sem opções extras, o `uv` mantém as versões já travadas
+e só resolve o que mudou. Para subir uma versão, acrescente
+`--upgrade-package <nome>` aos dois comandos.
 
 ### Testes e análise estática
 
