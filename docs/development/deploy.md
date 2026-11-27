@@ -127,6 +127,11 @@ Em **Environment Variables**, adicione:
 |---|---|
 | `PONTOA_ENVIRONMENT` | `production` |
 | `PONTOA_DATABASE_URL` | URL do passo 1.4 (com `postgresql+psycopg://`) |
+| `PONTOA_MIGRATE_ON_START` | `true` |
+
+A última aplica as migrações toda vez que a API sobe (o plano
+gratuito não tem comando de pré-deploy). Não defina `PORT`:
+o Render define sozinho.
 
 ### 2.4 Opções avançadas
 
@@ -135,15 +140,8 @@ Abra **Advanced** e preencha:
 | Campo | Valor |
 |---|---|
 | Health Check Path | `/health` |
-| Docker Command | ver abaixo |
+| Docker Command | **deixe vazio** (a imagem já inicia por `start.sh`) |
 | Auto-Deploy | **After CI Checks Pass** |
-
-**Docker Command** (aplica as migrações e sobe a API; copie
-exatamente, com as aspas simples):
-
-```text
-sh -c 'alembic upgrade head && exec uvicorn app.main:create_app --factory --host 0.0.0.0 --port $PORT'
-```
 
 Use `/health`, e não `/health/ready`, na verificação de
 saúde: o `/health/ready` consulta o banco e manteria o Neon

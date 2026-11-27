@@ -29,8 +29,9 @@ pode mudar (`pontoa.com.br` já está registrado por terceiros).
   para o Render. O navegador só fala com o site, sem CORS, e
   o cookie HttpOnly (revisão do ADR-0010) fica possível.
 - **Migrações:** o plano gratuito do Render não tem comando
-  de pré-deploy nem shell. O comando de início do container
-  roda `alembic upgrade head` antes do `uvicorn`. Com uma
+  de pré-deploy nem shell. O script de início da imagem
+  (`backend/start.sh`) roda `alembic upgrade head` antes do
+  `uvicorn` quando `PONTOA_MIGRATE_ON_START=true`. Com uma
   instância só, não há duas migrações ao mesmo tempo.
 - **API acordada:** o Render desliga o serviço gratuito após
   15 minutos sem tráfego, e voltar leva cerca de 1 minuto.
@@ -86,8 +87,9 @@ pode mudar (`pontoa.com.br` já está registrado por terceiros).
 - Ao passar de 750 horas, 5 GB de tráfego de saída ou 500
   minutos de build no mês, o Render suspende o serviço (sem
   cartão, não há cobrança) até o mês seguinte
-- O comando de início fica na configuração do Render, fora
-  do repositório; o guia de deploy é a referência
+- A configuração do serviço no Render (região, variáveis,
+  verificação de saúde) fica fora do repositório; o guia de
+  deploy é a referência
 
 ## Revisar quando
 
