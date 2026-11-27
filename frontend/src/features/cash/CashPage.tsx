@@ -13,6 +13,7 @@ import { TextField } from '../../components/ui/TextField'
 import { useToast } from '../../components/ui/useToast'
 import { formatDateTime, formatTime } from '../../lib/datetime'
 import { formatMoney, parseMoneyInput } from '../../lib/money'
+import { EMPTY_VALUE } from '../../lib/text'
 import { useCashHistory, useCashMovements, useCurrentCash, useOpenCash } from './api'
 import { CloseCashDialog } from './CloseCashDialog'
 import { DifferenceBadge } from './DifferenceBadge'
@@ -227,6 +228,10 @@ function CashHistory() {
                 </p>
               </div>
               <DifferenceBadge difference={session.difference ?? '0'} />
+              <p className="basis-full text-sm break-words whitespace-pre-line">
+                <span className="text-muted">Observação: </span>
+                {session.closing_notes?.trim() || EMPTY_VALUE}
+              </p>
             </li>
           ))}
         </ul>
