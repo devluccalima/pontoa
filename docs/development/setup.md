@@ -454,6 +454,6 @@ variáveis necessárias sem valores sensíveis.
 
 ## Deploy
 
-Produção usa Cloudflare Pages, Cloud Run e Neon
+Produção usa Cloudflare Pages, Render e Neon
 ([ADR-0011](../decisions/0011-deploy.md)). A criação das
 contas e a configuração estão em [deploy.md](deploy.md).
