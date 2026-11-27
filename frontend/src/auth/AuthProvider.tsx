@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { ApiError, apiRequest, onUnauthorized } from '../api/client'
-import type { LoginResponse, MeResponse } from '../api/types'
+import type { Business, LoginResponse, MeResponse } from '../api/types'
 import { clearDrafts } from '../lib/sessionDraft'
 import { clearToken, readToken, saveToken } from './tokenStore'
 import { AuthContext } from './useAuth'
@@ -62,9 +62,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const retry = useCallback(() => setState({ status: 'loading' }), [])
 
+  const updateBusiness = useCallback((business: Business) => {
+    setState((current) => (current.status === 'authenticated' ? { ...current, business } : current))
+  }, [])
+
   const value = useMemo(
-    () => ({ state, login, logout, retry }),
-    [state, login, logout, retry],
+    () => ({ state, login, logout, retry, updateBusiness }),
+    [state, login, logout, retry, updateBusiness],
   )
   return <AuthContext value={value}>{children}</AuthContext>
 }

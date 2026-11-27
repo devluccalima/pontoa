@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router'
+import { BusinessPage } from '../features/business/BusinessPage'
 import { CashPage } from '../features/cash/CashPage'
 import { ProductsPage } from '../features/catalog/ProductsPage'
 import { DashboardPage } from '../features/dashboard/DashboardPage'
@@ -26,6 +27,7 @@ export function AppRoutes() {
             <Route path="painel" element={<DashboardPage />} />
             <Route path="produtos" element={<ProductsPage />} />
             <Route path="equipe" element={<TeamPage />} />
+            <Route path="estabelecimento" element={<BusinessPage />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

@@ -37,6 +37,21 @@ def test_owner_updates_business(db_client: TestClient, db_session: Session) -> N
     assert response.json()["timezone"] == "America/Manaus"
 
 
+def test_business_name_is_trimmed_and_cannot_be_blank(
+    db_client: TestClient, db_session: Session
+) -> None:
+    owner = create_user(db_session, create_business(db_session), role=UserRole.OWNER)
+    headers = auth_headers(login(db_client, owner))
+
+    trimmed = db_client.patch(
+        BUSINESS_URL, headers=headers, json={"name": "  Arepas  "}
+    )
+    blank = db_client.patch(BUSINESS_URL, headers=headers, json={"name": "   "})
+
+    assert trimmed.json()["name"] == "Arepas"
+    assert blank.status_code == 422
+
+
 def test_unknown_timezone_is_rejected(
     db_client: TestClient, db_session: Session
 ) -> None:

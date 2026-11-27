@@ -12,6 +12,8 @@ export type AuthContextValue = {
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   retry: () => void
+  /** Troca os dados do estabelecimento da sessão depois de salvos na API. */
+  updateBusiness: (business: Business) => void
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

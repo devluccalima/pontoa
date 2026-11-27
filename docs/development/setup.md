@@ -89,6 +89,9 @@ Frontend 7:
 Frontend 8:
 - Equipe: cadastrar pessoas, trocar papel e senha, tirar acesso
 
+Frontend 9:
+- Estabelecimento: nome e fuso horário, editados pelo dono
+
 Infra 1:
 - CI no GitHub Actions (backend, frontend e imagem da API)
 - Dependências do backend travadas em lockfile com hashes

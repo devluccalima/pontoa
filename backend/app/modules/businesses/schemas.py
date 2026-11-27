@@ -3,7 +3,7 @@ from functools import cache
 from typing import Annotated
 from zoneinfo import available_timezones
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict, StringConstraints
 
 from app.core.schemas import PartialUpdate
 
@@ -20,6 +20,9 @@ def validate_timezone(value: str) -> str:
 
 
 Timezone = Annotated[str, AfterValidator(validate_timezone)]
+BusinessName = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+]
 
 
 class BusinessRead(BaseModel):
@@ -31,5 +34,5 @@ class BusinessRead(BaseModel):
 
 
 class BusinessUpdate(PartialUpdate):
-    name: Annotated[str, Field(min_length=1, max_length=120)] | None = None
+    name: BusinessName | None = None
     timezone: Timezone | None = None
