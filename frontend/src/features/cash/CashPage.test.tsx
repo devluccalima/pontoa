@@ -117,4 +117,29 @@ describe('CashPage', () => {
 
     expect(await within(dialog).findByText(/Há pedidos em andamento/)).toBeInTheDocument()
   })
+
+  it('shows the closing notes in the history, or a dash when there are none', async () => {
+    const closed = (id: string, closedAt: string, notes: string | null): CashSession => ({
+      ...openSession,
+      id,
+      is_open: false,
+      closed_at: closedAt,
+      closed_by_id: 'u1',
+      counted_amount: '135.00',
+      difference: '-2.00',
+      closing_notes: notes,
+    })
+    cashApi('owner', null, {
+      'GET /cash-sessions': () => ({
+        body: [closed('a', '2026-11-25T22:00:00Z', 'Faltou troco de R$ 2'), closed('b', '2026-11-24T22:00:00Z', null)],
+      }),
+    })
+    renderApp('/caixa')
+
+    const history = (await screen.findByRole('heading', { name: 'Últimos fechamentos' })).parentElement!
+    const rows = await within(history).findAllByRole('listitem')
+    expect(rows).toHaveLength(2)
+    expect(rows[0]).toHaveTextContent('Observação: Faltou troco de R$ 2')
+    expect(rows[1]).toHaveTextContent('Observação: —')
+  })
 })
