@@ -353,6 +353,14 @@ docker compose --profile app ps
 
 A API roda em modo produção: `/docs` fica desativado.
 
+A imagem inicia por `backend/start.sh`. Duas variáveis
+mudam o início:
+
+- `PORT`: porta HTTP (padrão 8000).
+- `PONTOA_MIGRATE_ON_START=true`: aplica as migrações antes
+  de subir a API. Usado no Render (ADR-0011); com mais de uma
+  instância, aplique as migrações separadamente.
+
 ### Parar e remover
 
 ```powershell
