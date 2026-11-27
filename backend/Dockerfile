@@ -22,9 +22,10 @@ RUN pip install --no-deps . \
 
 COPY alembic.ini ./
 COPY migrations ./migrations
+COPY --chmod=755 start.sh ./
 
 USER pontoa
 
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./start.sh"]
