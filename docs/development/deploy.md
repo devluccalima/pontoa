@@ -171,18 +171,31 @@ foram aplicadas pelo Render no passo 2.5.
 No PowerShell, na pasta `backend`, com o venv ativo:
 
 ```powershell
-$url = Read-Host "URL do Neon (postgresql+psycopg://...)" -AsSecureString
+$url = Read-Host "Cole a URL" -AsSecureString
 $env:PONTOA_DATABASE_URL = [System.Net.NetworkCredential]::new('', $url).Password
 $env:PONTOA_ENVIRONMENT = "production"
+$env:PONTOA_DEBUG = "false"
 
 python -m app.cli create-business --name "Arepas da Feira" --owner-name "Lucca" --owner-email SEU_EMAIL
 
-Remove-Item Env:PONTOA_DATABASE_URL, Env:PONTOA_ENVIRONMENT
+Remove-Item Env:PONTOA_DATABASE_URL, Env:PONTOA_ENVIRONMENT, Env:PONTOA_DEBUG
 Remove-Variable url
 ```
 
-As variáveis valem só para essa janela e têm prioridade
-sobre o `backend/.env` local.
+- Rode a primeira linha **sem mudar nada**. O texto entre
+  aspas é só a pergunta; a URL é colada **depois**, quando
+  aparecer `Cole a URL:`, e a tela mostra só asteriscos.
+  Nunca escreva a URL no próprio comando: ela ficaria no
+  histórico do PowerShell.
+- `PONTOA_DEBUG = "false"` é necessário porque o `.env` de
+  desenvolvimento liga o debug, que a API recusa em produção.
+- As variáveis valem só para essa janela e têm prioridade
+  sobre o `backend/.env` local. A senha do dono é pedida duas
+  vezes e não aparece na tela.
+
+Se a URL do banco vazar (num chat, num print, no histórico),
+troque a senha em **Neon → Roles → `neondb_owner` → Reset
+password** e atualize `PONTOA_DATABASE_URL` no Render.
 
 ---
 
