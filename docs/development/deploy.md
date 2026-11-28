@@ -127,6 +127,11 @@ Em **Environment Variables**, adicione:
 |---|---|
 | `PONTOA_ENVIRONMENT` | `production` |
 | `PONTOA_DATABASE_URL` | URL do passo 1.4 (com `postgresql+psycopg://`) |
+| `PONTOA_MIGRATE_ON_START` | `true` |
+
+A última aplica as migrações toda vez que a API sobe (o plano
+gratuito não tem comando de pré-deploy). Não defina `PORT`:
+o Render define sozinho.
 
 ### 2.4 Opções avançadas
 
@@ -135,15 +140,8 @@ Abra **Advanced** e preencha:
 | Campo | Valor |
 |---|---|
 | Health Check Path | `/health` |
-| Docker Command | ver abaixo |
+| Docker Command | **deixe vazio** (a imagem já inicia por `start.sh`) |
 | Auto-Deploy | **After CI Checks Pass** |
-
-**Docker Command** (aplica as migrações e sobe a API; copie
-exatamente, com as aspas simples):
-
-```text
-sh -c 'alembic upgrade head && exec uvicorn app.main:create_app --factory --host 0.0.0.0 --port $PORT'
-```
 
 Use `/health`, e não `/health/ready`, na verificação de
 saúde: o `/health/ready` consulta o banco e manteria o Neon
@@ -173,25 +171,38 @@ foram aplicadas pelo Render no passo 2.5.
 No PowerShell, na pasta `backend`, com o venv ativo:
 
 ```powershell
-$url = Read-Host "URL do Neon (postgresql+psycopg://...)" -AsSecureString
+$url = Read-Host "Cole a URL" -AsSecureString
 $env:PONTOA_DATABASE_URL = [System.Net.NetworkCredential]::new('', $url).Password
 $env:PONTOA_ENVIRONMENT = "production"
+$env:PONTOA_DEBUG = "false"
 
 python -m app.cli create-business --name "Arepas da Feira" --owner-name "Lucca" --owner-email SEU_EMAIL
 
-Remove-Item Env:PONTOA_DATABASE_URL, Env:PONTOA_ENVIRONMENT
+Remove-Item Env:PONTOA_DATABASE_URL, Env:PONTOA_ENVIRONMENT, Env:PONTOA_DEBUG
 Remove-Variable url
 ```
 
-As variáveis valem só para essa janela e têm prioridade
-sobre o `backend/.env` local.
+- Rode a primeira linha **sem mudar nada**. O texto entre
+  aspas é só a pergunta; a URL é colada **depois**, quando
+  aparecer `Cole a URL:`, e a tela mostra só asteriscos.
+  Nunca escreva a URL no próprio comando: ela ficaria no
+  histórico do PowerShell.
+- `PONTOA_DEBUG = "false"` é necessário porque o `.env` de
+  desenvolvimento liga o debug, que a API recusa em produção.
+- As variáveis valem só para essa janela e têm prioridade
+  sobre o `backend/.env` local. A senha do dono é pedida duas
+  vezes e não aparece na tela.
+
+Se a URL do banco vazar (num chat, num print, no histórico),
+troque a senha em **Neon → Roles → `neondb_owner` → Reset
+password** e atualize `PONTOA_DATABASE_URL` no Render.
 
 ---
 
 ## 4. Cloudflare Pages (site)
 
-Depende do PR de deploy estar na `main` (ele traz a função
-que encaminha `/api` ao Render).
+A função que encaminha `/api` ao Render fica em
+`frontend/functions/api/[[path]].js`.
 
 ### 4.1 Criar a conta
 
@@ -233,7 +244,10 @@ que encaminha `/api` ao Render).
 - `https://pontoa.pages.dev` abre a tela de login; entre com
   o e-mail e a senha do passo 3.
 - `https://pontoa.pages.dev/api/v1/auth/me` responde 401 em
-  JSON (sinal de que o encaminhamento à API funciona).
+  JSON (sinal de que o encaminhamento à API funciona). Se
+  responder `misconfigured`, falta a variável `API_ORIGIN`:
+  crie em **Settings → Variables and Secrets** do projeto e
+  refaça o deploy em **Deployments → Retry deployment**.
 - Cada PR ganha um endereço de prévia, mostrado num
   comentário do Cloudflare no PR. As prévias usam a mesma
   API e o mesmo banco de produção: cuidado ao testar nelas.
