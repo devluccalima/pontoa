@@ -11,6 +11,7 @@ from app.modules.cash_register.models import CashMovement, CashSession
 from app.modules.catalog.models import Category, Product
 from app.modules.orders.models import Order, OrderItem
 from app.modules.payments.models import Payment
+from app.modules.stock.models import StockMovement
 from app.modules.users.models import User
 
 __all__ = [
@@ -23,6 +24,7 @@ __all__ = [
     "OrderItem",
     "Payment",
     "Product",
+    "StockMovement",
     "User",
     "UserSession",
 ]

@@ -25,6 +25,7 @@ class Product(BusinessScopedMixin, TimestampMixin, Base):
     __table_args__ = (
         UniqueConstraint("business_id", "name"),
         CheckConstraint("price >= 0", name="price_not_negative"),
+        CheckConstraint("stock_quantity >= 0", name="stock_quantity_not_negative"),
     )
 
     category_id: Mapped[uuid.UUID | None] = mapped_column(
@@ -35,3 +36,9 @@ class Product(BusinessScopedMixin, TimestampMixin, Base):
     price: Mapped[Decimal]
     position: Mapped[int] = mapped_column(server_default="0")
     active: Mapped[bool] = mapped_column(server_default=true())
+    # Saldo em estoque; None quando o produto não tem estoque controlado (ADR-0012).
+    stock_quantity: Mapped[int | None]
+
+    @property
+    def tracks_stock(self) -> bool:
+        return self.stock_quantity is not None

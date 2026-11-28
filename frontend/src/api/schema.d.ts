@@ -392,6 +392,41 @@ export interface paths {
         patch: operations["update_product_api_v1_products__product_id__patch"];
         trace?: never;
     };
+    "/api/v1/products/{product_id}/stock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Define o saldo em estoque e liga o controle */
+        put: operations["set_stock_api_v1_products__product_id__stock_put"];
+        post?: never;
+        /** Desliga o controle de estoque do produto */
+        delete: operations["disable_stock_api_v1_products__product_id__stock_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/{product_id}/stock/movements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista as últimas movimentações de estoque do produto */
+        get: operations["list_movements_api_v1_products__product_id__stock_movements_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users": {
         parameters: {
             query?: never;
@@ -908,6 +943,11 @@ export interface components {
             position: number;
             /** Price */
             price: string;
+            /**
+             * Stock Quantity
+             * @description Saldo em estoque; null quando o estoque não é controlado.
+             */
+            stock_quantity: number | null;
         };
         /**
          * ProductUpdate
@@ -932,6 +972,53 @@ export interface components {
             /** Amount */
             amount: string;
             method: components["schemas"]["PaymentMethod"];
+        };
+        /**
+         * StockMovementKind
+         * @enum {string}
+         */
+        StockMovementKind: "adjustment" | "sale" | "cancellation" | "tracking_off";
+        /** StockMovementRead */
+        StockMovementRead: {
+            /** Balance */
+            balance: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Created By Id
+             * Format: uuid
+             */
+            created_by_id: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            kind: components["schemas"]["StockMovementKind"];
+            /** Order Id */
+            order_id: string | null;
+            /**
+             * Product Id
+             * Format: uuid
+             */
+            product_id: string;
+            /** Quantity Change */
+            quantity_change: number;
+            /** Reason */
+            reason: string | null;
+        };
+        /**
+         * StockSet
+         * @description Saldo atual do produto, por exemplo depois de contar ou produzir.
+         */
+        StockSet: {
+            /** Quantity */
+            quantity: number;
+            /** Reason */
+            reason?: string | null;
         };
         /** TopProduct */
         TopProduct: {
@@ -1890,6 +1977,103 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_stock_api_v1_products__product_id__stock_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StockSet"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    disable_stock_api_v1_products__product_id__stock_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_movements_api_v1_products__product_id__stock_movements_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StockMovementRead"][];
                 };
             };
             /** @description Validation Error */

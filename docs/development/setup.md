@@ -96,6 +96,13 @@ Infra 1:
 - CI no GitHub Actions (backend, frontend e imagem da API)
 - Dependências do backend travadas em lockfile com hashes
 
+Infra 2:
+- Deploy: Cloudflare Pages, Render e Neon (ADR-0011)
+
+Backend 13:
+- Estoque por produto: saldo opcional, baixa na venda, devolução
+  no cancelamento, recusa sem saldo e histórico (ADR-0012)
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme
