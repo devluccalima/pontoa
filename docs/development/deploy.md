@@ -201,8 +201,8 @@ password** e atualize `PONTOA_DATABASE_URL` no Render.
 
 ## 4. Cloudflare Pages (site)
 
-Depende do PR de deploy estar na `main` (ele traz a função
-que encaminha `/api` ao Render).
+A função que encaminha `/api` ao Render fica em
+`frontend/functions/api/[[path]].js`.
 
 ### 4.1 Criar a conta
 
@@ -244,7 +244,10 @@ que encaminha `/api` ao Render).
 - `https://pontoa.pages.dev` abre a tela de login; entre com
   o e-mail e a senha do passo 3.
 - `https://pontoa.pages.dev/api/v1/auth/me` responde 401 em
-  JSON (sinal de que o encaminhamento à API funciona).
+  JSON (sinal de que o encaminhamento à API funciona). Se
+  responder `misconfigured`, falta a variável `API_ORIGIN`:
+  crie em **Settings → Variables and Secrets** do projeto e
+  refaça o deploy em **Deployments → Retry deployment**.
 - Cada PR ganha um endereço de prévia, mostrado num
   comentário do Cloudflare no PR. As prévias usam a mesma
   API e o mesmo banco de produção: cuidado ao testar nelas.
