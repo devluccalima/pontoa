@@ -167,4 +167,49 @@ describe('PaymentDialog', () => {
     expect(within(dialog).getByText(textMatcher('O saldo do pedido é R$ 37,00.'))).toBeInTheDocument()
     expect(calls.some((call) => call.path.endsWith('/payments'))).toBe(false)
   })
+
+  it('shows sold out products and caps the cart at the stock', async () => {
+    posApi({}, {
+      'GET /products': () => ({
+        body: [
+          { ...queijo, stock_quantity: 2 },
+          { ...suco, stock_quantity: 0 },
+        ],
+      }),
+    })
+    renderApp('/pdv')
+
+    expect(await card(/^Suco, R\$\s9,00, esgotado$/)).toBeDisabled()
+    expect(screen.getByText('Esgotado')).toBeInTheDocument()
+
+    fireEvent.click(await card(/^Arepa de queijo, .*, restam 2$/))
+    expect(await card(/^Arepa de queijo, .*, resta 1, 1 na comanda$/)).toBeEnabled()
+    fireEvent.click(await card(/^Arepa de queijo/))
+
+    expect(await card(/^Arepa de queijo, .*, tudo na comanda, 2 na comanda$/)).toBeDisabled()
+    const cart = screen.getByRole('complementary', { name: 'Comanda' })
+    expect(within(cart).getByRole('button', { name: 'Aumentar Arepa de queijo' })).toBeDisabled()
+  })
+
+  it('updates the stock when the order is refused for lack of it', async () => {
+    let stock = 3
+    posApi({}, {
+      'GET /products': () => ({ body: [{ ...queijo, stock_quantity: stock }] }),
+      'POST /orders': () => {
+        stock = 1 // outro aparelho vendeu antes
+        return apiError(409, 'business_rule_violation', 'Estoque insuficiente: Arepa de queijo (disponível: 1).')
+      },
+    })
+    renderApp('/pdv')
+
+    fireEvent.click(await card(/^Arepa de queijo/))
+    fireEvent.click(await card(/^Arepa de queijo/))
+    const cart = screen.getByRole('complementary', { name: 'Comanda' })
+    fireEvent.click(within(cart).getByRole('button', { name: 'Finalizar pedido' }))
+
+    expect(await screen.findByText('Estoque insuficiente: Arepa de queijo (disponível: 1).')).toBeInTheDocument()
+    expect(await within(cart).findByText('Só resta 1. Diminua para finalizar.')).toBeInTheDocument()
+    fireEvent.click(within(cart).getByRole('button', { name: 'Diminuir Arepa de queijo' }))
+    expect(within(cart).queryByText(/Diminua para finalizar/)).not.toBeInTheDocument()
+  })
 })

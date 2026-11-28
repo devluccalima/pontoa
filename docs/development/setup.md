@@ -103,6 +103,10 @@ Backend 13:
 - Estoque por produto: saldo opcional, baixa na venda, devolução
   no cancelamento, recusa sem saldo e histórico (ADR-0012)
 
+Frontend 10:
+- Estoque: tela do dono com saldo e histórico; "Restam N" e
+  "Esgotado" na tela de vender; lembrete ao abrir o caixa
+
 ## Instalação das aplicações
 
 As instruções serão adicionadas conforme

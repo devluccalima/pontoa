@@ -246,6 +246,8 @@ para evitar pedidos ou pagamentos duplicados.
 | Disponível | `surface`, borda `hairline`, nome (`body-strong`) e preço (`price`) |
 | Selecionado | Borda de 2px na cor `text` + marcador `accent` com a quantidade |
 | Esgotado | Fundo `bg`, borda tracejada, nome em `muted`, texto "Esgotado"; não tocável |
+| Estoque controlado | Na base, à direita do preço: "Restam N" em `muted` (unidades que ainda cabem na comanda) |
+| Tudo na comanda | Saldo inteiro já na comanda: "Tudo na comanda" em `text`; não tocável |
 
 - O cartão inteiro é a área de toque; um toque adiciona uma unidade.
 - Altura mínima de 84px; nomes longos quebram em até duas linhas.
@@ -254,6 +256,16 @@ para evitar pedidos ou pagamentos duplicados.
 - A borda de 2px do selecionado não desloca o conteúdo (1px de borda
   + 1px de contorno interno).
 - O marcador de quantidade tem no mínimo 28px e borda na cor `bg`.
+- Produto sem estoque controlado não mostra saldo.
+
+### Saldo em estoque
+
+- Lista da tela Estoque: saldo em `price` alinhado à direita
+  ("12 unidades"); até 5 unidades, badge `attention` com ícone
+  de alerta; zero, badge `danger` "Esgotado".
+- Na comanda, se o saldo caiu abaixo da quantidade do item (outro
+  aparelho vendeu), o item mostra "Só restam N. Diminua para
+  finalizar." em `danger`; o botão + fica desabilitado no limite.
 
 ### Item da comanda
 

@@ -32,6 +32,7 @@ function cashApi(role: 'owner' | 'operator', session: CashSession | null, extra:
     'GET /cash-sessions/current': () => ({ body: { session } }),
     'GET /cash-sessions': () => ({ body: [] }),
     'GET /cash-sessions/s1/movements': () => ({ body: [] }),
+    'GET /products': () => ({ body: [] }),
     ...extra,
   })
 }
@@ -141,5 +142,16 @@ describe('CashPage', () => {
     expect(rows).toHaveLength(2)
     expect(rows[0]).toHaveTextContent('Observação: Faltou troco de R$ 2')
     expect(rows[1]).toHaveTextContent('Observação: —')
+  })
+
+  it('reminds the owner to check the stock before opening the cash', async () => {
+    const tracked = { id: 'p1', category_id: null, name: 'Arepa', description: null, price: '18.50', position: 0, active: true, stock_quantity: 4 }
+    cashApi('owner', null, {
+      'GET /products': () => ({ body: [tracked, { ...tracked, id: 'p2', name: 'Suco', stock_quantity: null }] }),
+    })
+    renderApp('/caixa')
+
+    expect(await screen.findByText(/1 produto tem estoque controlado/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Conferir o estoque' })).toHaveAttribute('href', '/estoque')
   })
 })

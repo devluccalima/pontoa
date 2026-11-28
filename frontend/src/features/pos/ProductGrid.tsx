@@ -3,8 +3,7 @@ import { formatMoney } from '../../lib/money'
 
 /**
  * DESIGN.md, "Cartão de produto": o cartão inteiro é a área de toque; um toque adiciona uma unidade.
- * Os cartões de uma fileira têm a mesma altura (a do nome mais longo) e o preço fica sempre
- * na base, então os preços se alinham mesmo com nomes de uma ou duas linhas.
+ * Com estoque controlado (ADR-0012), mostra quantas unidades ainda cabem e fica "Esgotado" sem saldo.
  */
 export function ProductGrid({
   products,
@@ -22,24 +21,50 @@ export function ProductGrid({
       {products.map((product) => {
         const quantity = quantities.get(product.id) ?? 0
         const selected = quantity > 0
+        const stock = product.stock_quantity
+        const soldOut = stock !== null && stock <= 0
+        // Unidades que ainda podem entrar na comanda.
+        const remaining = stock === null ? null : Math.max(stock - quantity, 0)
+        const allInCart = !soldOut && remaining === 0
+
+        const labelParts = [product.name, formatMoney(product.price)]
+        if (soldOut) labelParts.push('esgotado')
+        else if (remaining !== null) labelParts.push(stockText(remaining, allInCart).toLowerCase())
+        if (selected) labelParts.push(`${quantity} na comanda`)
+
         return (
           <li key={product.id} className="flex">
             <button
               type="button"
-              disabled={disabled}
+              disabled={disabled || soldOut || allInCart}
               onClick={() => onAdd(product)}
-              aria-label={`${product.name}, ${formatMoney(product.price)}${selected ? `, ${quantity} na comanda` : ''}`}
+              aria-label={labelParts.join(', ')}
               className={[
-                'relative flex min-h-[84px] w-full flex-1 flex-col justify-between gap-2 rounded-md bg-surface p-3 text-left',
+                'relative flex min-h-[84px] w-full flex-1 flex-col justify-between gap-2 rounded-md border p-3 text-left',
                 'transition-transform duration-100 active:scale-[0.98] motion-reduce:active:scale-100',
                 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
-                'disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100',
-                'border',
-                selected ? 'border-text ring-1 ring-text ring-inset' : 'border-hairline',
+                'disabled:cursor-not-allowed disabled:active:scale-100',
+                soldOut
+                  ? 'border-dashed border-border-strong bg-bg'
+                  : selected
+                    ? 'border-text bg-surface ring-1 ring-text ring-inset'
+                    : 'border-hairline bg-surface',
+                disabled && !soldOut ? 'disabled:opacity-60' : '',
               ].join(' ')}
             >
-              <span className="line-clamp-2 pr-6 font-medium">{product.name}</span>
-              <span className="text-xl leading-tight font-semibold tabular-nums">{formatMoney(product.price)}</span>
+              <span className={`line-clamp-2 pr-6 font-medium ${soldOut ? 'text-muted' : ''}`}>{product.name}</span>
+              <span className="flex flex-wrap items-end justify-between gap-x-2 gap-y-1">
+                <span className={`text-xl leading-tight font-semibold tabular-nums ${soldOut ? 'text-muted' : ''}`}>
+                  {formatMoney(product.price)}
+                </span>
+                {soldOut ? (
+                  <span className="text-sm font-semibold text-text">Esgotado</span>
+                ) : remaining !== null ? (
+                  <span className={`text-sm tabular-nums ${allInCart ? 'font-medium text-text' : 'text-muted'}`}>
+                    {stockText(remaining, allInCart)}
+                  </span>
+                ) : null}
+              </span>
               {selected ? (
                 <span
                   aria-hidden
@@ -54,4 +79,9 @@ export function ProductGrid({
       })}
     </ul>
   )
+}
+
+function stockText(remaining: number, allInCart: boolean): string {
+  if (allInCart) return 'Tudo na comanda'
+  return remaining === 1 ? 'Resta 1' : `Restam ${remaining}`
 }
