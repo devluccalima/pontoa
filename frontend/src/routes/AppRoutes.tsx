@@ -5,6 +5,7 @@ import { ProductsPage } from '../features/catalog/ProductsPage'
 import { DashboardPage } from '../features/dashboard/DashboardPage'
 import { OrdersPage } from '../features/orders/OrdersPage'
 import { PosPage } from '../features/pos/PosPage'
+import { StockPage } from '../features/stock/StockPage'
 import { TeamPage } from '../features/team/TeamPage'
 import { AppLayout } from '../layouts/AppLayout'
 import { LoginPage } from '../pages/LoginPage'
@@ -26,6 +27,7 @@ export function AppRoutes() {
           <Route element={<RequireRole role="owner" />}>
             <Route path="painel" element={<DashboardPage />} />
             <Route path="produtos" element={<ProductsPage />} />
+            <Route path="estoque" element={<StockPage />} />
             <Route path="equipe" element={<TeamPage />} />
             <Route path="estabelecimento" element={<BusinessPage />} />
           </Route>

@@ -37,7 +37,7 @@ export class ApiError extends Error {
 type Query = Record<string, string | number | boolean | string[] | null | undefined>
 
 export type RequestOptions = {
-  method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   body?: unknown
   query?: Query
   signal?: AbortSignal

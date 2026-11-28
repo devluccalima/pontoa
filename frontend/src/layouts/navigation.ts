@@ -1,4 +1,5 @@
 import {
+  Boxes,
   ChartNoAxesCombined,
   ClipboardList,
   Package,
@@ -24,6 +25,7 @@ export const NAVIGATION: NavItem[] = [
   { label: 'Caixa', path: '/caixa', icon: Wallet },
   { label: 'Painel', path: '/painel', icon: ChartNoAxesCombined, ownerOnly: true },
   { label: 'Produtos', path: '/produtos', icon: Package, ownerOnly: true },
+  { label: 'Estoque', path: '/estoque', icon: Boxes, ownerOnly: true },
   { label: 'Equipe', path: '/equipe', icon: Users, ownerOnly: true },
   { label: 'Estabelecimento', path: '/estabelecimento', icon: Settings, ownerOnly: true },
 ]

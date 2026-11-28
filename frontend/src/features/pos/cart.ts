@@ -21,8 +21,9 @@ export type Cart = {
 export const EMPTY_CART: Cart = { lines: [], customerName: '' }
 
 export type CartAction =
-  | { type: 'add'; productId: string; name: string; unitPrice: string }
-  | { type: 'setQuantity'; productId: string; quantity: number }
+  /** `max`: limite de unidades, por exemplo o saldo em estoque. */
+  | { type: 'add'; productId: string; name: string; unitPrice: string; max?: number }
+  | { type: 'setQuantity'; productId: string; quantity: number; max?: number }
   | { type: 'remove'; productId: string }
   | { type: 'restore'; line: CartLine; index: number }
   | { type: 'setNotes'; productId: string; notes: string }
@@ -32,20 +33,23 @@ export type CartAction =
 export function cartReducer(cart: Cart, action: CartAction): Cart {
   switch (action.type) {
     case 'add': {
+      const max = limit(action.max)
       const existing = cart.lines.find((line) => line.productId === action.productId)
       if (existing) {
-        return updateLine(cart, action.productId, (line) => ({
-          ...line,
-          quantity: Math.min(line.quantity + 1, MAX_QUANTITY),
-        }))
+        if (existing.quantity >= max) return cart
+        return updateLine(cart, action.productId, (line) => ({ ...line, quantity: line.quantity + 1 }))
       }
-      if (cart.lines.length >= MAX_LINES) return cart
+      if (cart.lines.length >= MAX_LINES || max < 1) return cart
       const line = { productId: action.productId, name: action.name, unitPrice: action.unitPrice, quantity: 1, notes: '' }
       return { ...cart, lines: [...cart.lines, line] }
     }
     case 'setQuantity':
       if (action.quantity < 1) return cartReducer(cart, { type: 'remove', productId: action.productId })
-      return updateLine(cart, action.productId, (line) => ({ ...line, quantity: Math.min(action.quantity, MAX_QUANTITY) }))
+      return updateLine(cart, action.productId, (line) => ({
+        ...line,
+        // Diminuir sempre é permitido, mesmo acima de um limite que caiu.
+        quantity: action.quantity > line.quantity ? Math.min(action.quantity, limit(action.max)) : action.quantity,
+      }))
     case 'remove':
       return { ...cart, lines: cart.lines.filter((line) => line.productId !== action.productId) }
     case 'restore': {
@@ -61,6 +65,15 @@ export function cartReducer(cart: Cart, action: CartAction): Cart {
     case 'clear':
       return EMPTY_CART
   }
+}
+
+function limit(max: number | undefined): number {
+  return Math.min(max ?? MAX_QUANTITY, MAX_QUANTITY)
+}
+
+/** Quantas unidades do produto cabem na comanda: o saldo, se o estoque é controlado. */
+export function quantityLimit(product: { stock_quantity: number | null }): number {
+  return limit(product.stock_quantity ?? undefined)
 }
 
 function updateLine(cart: Cart, productId: string, update: (line: CartLine) => CartLine): Cart {

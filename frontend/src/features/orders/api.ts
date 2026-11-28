@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiRequest } from '../../api/client'
 import type { Order, OrderCreate, OrderStatus } from '../../api/types'
 import { cashKeys } from '../cash/api'
+import { catalogKeys } from '../catalog/api'
 
 export const orderKeys = {
   all: ['orders'] as const,
@@ -32,7 +33,12 @@ function useOrderMutation<TInput>(mutationFn: (input: TInput) => Promise<Order>)
       )
     },
     // Conflito com outro aparelho (já avançado, já cancelado): a lista volta ao estado real.
-    onSettled: () => queryClient.invalidateQueries({ queryKey: orderKeys.all }),
+    // O cancelamento devolve itens ao estoque: o saldo dos produtos também é recarregado.
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: orderKeys.all }),
+        queryClient.invalidateQueries({ queryKey: catalogKeys.products }),
+      ]),
   })
 }
 
@@ -64,7 +70,9 @@ export function useCreateOrder() {
       return queryClient.invalidateQueries({ queryKey: orderKeys.all })
     },
     onError: () =>
-      // "Caixa fechado" pode ter mudado em outro aparelho: atualiza o estado do caixa.
+      // "Caixa fechado" ou "estoque insuficiente" podem ter mudado em outro aparelho.
       queryClient.invalidateQueries({ queryKey: cashKeys.current }),
+    // A venda baixa o estoque: o saldo mostrado na grade é recarregado.
+    onSettled: () => queryClient.invalidateQueries({ queryKey: catalogKeys.products }),
   })
 }

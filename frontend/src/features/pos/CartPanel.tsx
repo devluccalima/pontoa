@@ -16,10 +16,13 @@ export function CartContents({
   cart,
   dispatch,
   onRemove,
+  limits,
 }: {
   cart: Cart
   dispatch: (action: CartAction) => void
   onRemove: (line: CartLine) => void
+  /** Limite por produto (saldo em estoque); sem entrada, vale `MAX_QUANTITY`. */
+  limits?: Map<string, number>
 }) {
   if (cart.lines.length === 0) {
     return <p className="py-6 text-center text-muted">Toque nos produtos para montar o pedido.</p>
@@ -28,7 +31,13 @@ export function CartContents({
     <div className="flex flex-col gap-4">
       <ul className="flex flex-col divide-y divide-hairline">
         {cart.lines.map((line) => (
-          <CartLineRow key={line.productId} line={line} dispatch={dispatch} onRemove={() => onRemove(line)} />
+          <CartLineRow
+            key={line.productId}
+            line={line}
+            max={limits?.get(line.productId) ?? MAX_QUANTITY}
+            dispatch={dispatch}
+            onRemove={() => onRemove(line)}
+          />
         ))}
       </ul>
       <TextField
@@ -43,7 +52,17 @@ export function CartContents({
   )
 }
 
-function CartLineRow({ line, dispatch, onRemove }: { line: CartLine; dispatch: (action: CartAction) => void; onRemove: () => void }) {
+function CartLineRow({
+  line,
+  max,
+  dispatch,
+  onRemove,
+}: {
+  line: CartLine
+  max: number
+  dispatch: (action: CartAction) => void
+  onRemove: () => void
+}) {
   const [editingNotes, setEditingNotes] = useState(Boolean(line.notes))
   const subtotal = toCents(line.unitPrice) * line.quantity
   return (
@@ -53,6 +72,12 @@ function CartLineRow({ line, dispatch, onRemove }: { line: CartLine; dispatch: (
         <div className="min-w-0">
           <p className="font-medium">{line.name}</p>
           <p className="text-sm text-muted tabular-nums">{formatMoney(line.unitPrice)} cada</p>
+          {line.quantity > max ? (
+            // O saldo caiu depois que o item entrou na comanda (outro aparelho vendeu).
+            <p className="text-sm font-medium text-danger">
+              {max === 0 ? 'Esgotado.' : `Só ${max === 1 ? 'resta 1' : `restam ${max}`}.`} Diminua para finalizar.
+            </p>
+          ) : null}
         </div>
         <p className="text-right font-semibold tabular-nums">{formatCents(subtotal)}</p>
         <div className="col-span-2 flex items-center gap-2">
@@ -75,8 +100,8 @@ function CartLineRow({ line, dispatch, onRemove }: { line: CartLine; dispatch: (
           </span>
           <button
             type="button"
-            onClick={() => dispatch({ type: 'setQuantity', productId: line.productId, quantity: line.quantity + 1 })}
-            disabled={line.quantity >= MAX_QUANTITY}
+            onClick={() => dispatch({ type: 'setQuantity', productId: line.productId, quantity: line.quantity + 1, max })}
+            disabled={line.quantity >= max}
             aria-label={`Aumentar ${line.name}`}
             className={stepButton}
           >

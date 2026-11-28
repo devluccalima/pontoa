@@ -21,10 +21,11 @@ export function useCategories() {
   })
 }
 
-export function useProducts() {
+export function useProducts(options: { refetchInterval?: number } = {}) {
   return useQuery({
     queryKey: catalogKeys.products,
     queryFn: ({ signal }) => apiRequest<Product[]>('/products', { signal }),
+    refetchInterval: options.refetchInterval,
   })
 }
 

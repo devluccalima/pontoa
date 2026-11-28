@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import type { FormEvent } from 'react'
 import { ArrowDownToLine, ArrowUpFromLine, Lock, LockOpen, Wallet } from 'lucide-react'
 import type { CashMovement, CashSession } from '../../api/types'
@@ -14,6 +15,7 @@ import { useToast } from '../../components/ui/useToast'
 import { formatDateTime, formatTime } from '../../lib/datetime'
 import { formatMoney, parseMoneyInput } from '../../lib/money'
 import { EMPTY_VALUE } from '../../lib/text'
+import { useProducts } from '../catalog/api'
 import { useCashHistory, useCashMovements, useCurrentCash, useOpenCash } from './api'
 import { CloseCashDialog } from './CloseCashDialog'
 import { DifferenceBadge } from './DifferenceBadge'
@@ -76,6 +78,7 @@ function ClosedCash({ isOwner }: { isOwner: boolean }) {
         <h2 className="text-lg font-semibold">Caixa fechado</h2>
       </div>
       <p className="text-muted">Conte o dinheiro que fica na gaveta para troco e abra o caixa. Sem caixa aberto, não dá para registrar pedidos.</p>
+      <StockReminder />
       {open.error && !error ? <Alert>{errorMessage(open.error)}</Alert> : null}
       <TextField
         label="Troco inicial"
@@ -97,6 +100,22 @@ function ClosedCash({ isOwner }: { isOwner: boolean }) {
         Abrir caixa
       </Button>
     </form>
+  )
+}
+
+/** O saldo continua de um dia para o outro (ADR-0012): antes do turno, vale conferir. */
+function StockReminder() {
+  const products = useProducts()
+  const tracked = (products.data ?? []).filter((product) => product.active && product.stock_quantity !== null).length
+  if (tracked === 0) return null
+  return (
+    <Alert tone="info">
+      {tracked === 1 ? '1 produto tem' : `${tracked} produtos têm`} estoque controlado.{' '}
+      <Link to="/estoque" className="font-semibold underline underline-offset-4">
+        Conferir o estoque
+      </Link>{' '}
+      antes de começar a vender.
+    </Alert>
   )
 }
 

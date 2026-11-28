@@ -15,17 +15,19 @@ import { useCurrentCash } from '../cash/api'
 import { useCategories, useProducts } from '../catalog/api'
 import { useCreateOrder } from '../orders/api'
 import { PaymentDialog } from '../payments/PaymentDialog'
-import { cartItemCount, cartTotalCents, useCart } from './cart'
+import { cartItemCount, cartTotalCents, quantityLimit, useCart } from './cart'
 import type { CartLine } from './cart'
 import { CartContents, CartTotal } from './CartPanel'
 import { ProductGrid } from './ProductGrid'
 
 const ALL = 'all'
+const STOCK_REFRESH_MS = 30_000
 
 export function PosPage() {
   const { user } = useSession()
   const cash = useCurrentCash()
-  const products = useProducts()
+  // Outro aparelho pode vender o último item: o saldo é atualizado de tempos em tempos.
+  const products = useProducts({ refetchInterval: STOCK_REFRESH_MS })
   const categories = useCategories()
   const { cart, dispatch } = useCart()
   const { showToast } = useToast()
@@ -41,13 +43,17 @@ export function PosPage() {
   }, [available, categories.data])
   const visible = category === ALL ? available : available.filter((product) => product.category_id === category)
   const quantities = useMemo(() => new Map(cart.lines.map((line) => [line.productId, line.quantity])), [cart.lines])
+  const limits = useMemo(
+    () => new Map((products.data ?? []).map((product) => [product.id, quantityLimit(product)])),
+    [products.data],
+  )
 
   const cashOpen = Boolean(cash.data)
   const count = cartItemCount(cart)
   const empty = cart.lines.length === 0
 
   function add(product: Product) {
-    dispatch({ type: 'add', productId: product.id, name: product.name, unitPrice: product.price })
+    dispatch({ type: 'add', productId: product.id, name: product.name, unitPrice: product.price, max: quantityLimit(product) })
   }
 
   function remove(line: CartLine) {
@@ -172,7 +178,7 @@ export function PosPage() {
           Comanda{count > 0 ? <span className="font-normal text-muted"> · {count} {count === 1 ? 'item' : 'itens'}</span> : null}
         </h2>
         <div className="-mx-4 flex-1 overflow-y-auto px-4">
-          <CartContents cart={cart} dispatch={dispatch} onRemove={remove} />
+          <CartContents cart={cart} dispatch={dispatch} onRemove={remove} limits={limits} />
         </div>
         <CartTotal cart={cart} />
         {finishButton}
@@ -203,7 +209,7 @@ export function PosPage() {
           </div>
         }
       >
-        <CartContents cart={cart} dispatch={dispatch} onRemove={remove} />
+        <CartContents cart={cart} dispatch={dispatch} onRemove={remove} limits={limits} />
       </Dialog>
 
       {paying ? <PaymentDialog order={paying} onClose={() => setPaying(null)} /> : null}
