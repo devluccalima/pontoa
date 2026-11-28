@@ -1219,6 +1219,18 @@
           "price": {
             "title": "Price",
             "type": "string"
+          },
+          "stock_quantity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Saldo em estoque; null quando o estoque não é controlado.",
+            "title": "Stock Quantity"
           }
         },
         "required": [
@@ -1228,7 +1240,8 @@
           "description",
           "price",
           "position",
-          "active"
+          "active",
+          "stock_quantity"
         ],
         "title": "ProductRead",
         "type": "object"
@@ -1332,6 +1345,123 @@
           "amount"
         ],
         "title": "ReceivedByMethod",
+        "type": "object"
+      },
+      "StockMovementKind": {
+        "enum": [
+          "adjustment",
+          "sale",
+          "cancellation",
+          "tracking_off"
+        ],
+        "title": "StockMovementKind",
+        "type": "string"
+      },
+      "StockMovementRead": {
+        "properties": {
+          "balance": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Balance"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by_id": {
+            "format": "uuid",
+            "title": "Created By Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/StockMovementKind"
+          },
+          "order_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id"
+          },
+          "product_id": {
+            "format": "uuid",
+            "title": "Product Id",
+            "type": "string"
+          },
+          "quantity_change": {
+            "title": "Quantity Change",
+            "type": "integer"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "id",
+          "product_id",
+          "kind",
+          "quantity_change",
+          "balance",
+          "order_id",
+          "reason",
+          "created_by_id",
+          "created_at"
+        ],
+        "title": "StockMovementRead",
+        "type": "object"
+      },
+      "StockSet": {
+        "additionalProperties": false,
+        "description": "Saldo atual do produto, por exemplo depois de contar ou produzir.",
+        "properties": {
+          "quantity": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "quantity"
+        ],
+        "title": "StockSet",
         "type": "object"
       },
       "TopProduct": {
@@ -2959,6 +3089,162 @@
         "summary": "Altera preço, dados ou disponibilidade",
         "tags": [
           "catalog"
+        ]
+      }
+    },
+    "/api/v1/products/{product_id}/stock": {
+      "delete": {
+        "operationId": "disable_stock_api_v1_products__product_id__stock_delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Product Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Desliga o controle de estoque do produto",
+        "tags": [
+          "stock"
+        ]
+      },
+      "put": {
+        "operationId": "set_stock_api_v1_products__product_id__stock_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Product Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StockSet"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Define o saldo em estoque e liga o controle",
+        "tags": [
+          "stock"
+        ]
+      }
+    },
+    "/api/v1/products/{product_id}/stock/movements": {
+      "get": {
+        "operationId": "list_movements_api_v1_products__product_id__stock_movements_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Product Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StockMovementRead"
+                  },
+                  "title": "Response List Movements Api V1 Products  Product Id  Stock Movements Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Lista as últimas movimentações de estoque do produto",
+        "tags": [
+          "stock"
         ]
       }
     },

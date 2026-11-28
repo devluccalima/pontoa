@@ -1,4 +1,5 @@
 import uuid
+from collections import Counter
 from datetime import UTC, datetime
 from decimal import Decimal
 
@@ -16,6 +17,7 @@ from app.modules.orders.models import (
     OrderStatus,
 )
 from app.modules.orders.schemas import OrderCancel, OrderCreate
+from app.modules.stock import service as stock
 from app.modules.users.models import User, UserRole
 
 
@@ -23,6 +25,10 @@ def create_order(db: Session, user: User, data: OrderCreate) -> Order:
     # Bloqueia o caixa: dois pedidos simultâneos não recebem o mesmo número.
     session = require_open_session(db, user.business_id, for_update=True)
     products = _load_products(db, user.business_id, data)
+    quantities: Counter[uuid.UUID] = Counter()
+    for requested in data.items:
+        quantities[requested.product_id] += requested.quantity
+    stock.ensure_available(products, quantities)
 
     items = []
     for item in data.items:
@@ -51,6 +57,9 @@ def create_order(db: Session, user: User, data: OrderCreate) -> Order:
     )
     session.next_order_number += 1
     db.add(order)
+    db.flush()
+    stock.take_for_order(db, user, order, products, quantities)
+
     db.commit()
     return order
 
@@ -58,12 +67,16 @@ def create_order(db: Session, user: User, data: OrderCreate) -> Order:
 def _load_products(
     db: Session, business_id: uuid.UUID, data: OrderCreate
 ) -> dict[uuid.UUID, Product]:
-    """Produtos do pedido, todos do estabelecimento e disponíveis."""
+    """Produtos do pedido, todos do estabelecimento e disponíveis.
+
+    Ficam bloqueados até o fim da transação, para a baixa do estoque.
+    """
     requested = {item.product_id for item in data.items}
     found = db.scalars(
-        select(Product).where(
-            Product.business_id == business_id, Product.id.in_(requested)
-        )
+        select(Product)
+        .where(Product.business_id == business_id, Product.id.in_(requested))
+        .order_by(Product.id)
+        .with_for_update()
     )
     products = {product.id: product for product in found}
 
@@ -147,5 +160,6 @@ def cancel_order(db: Session, user: User, order: Order, data: OrderCancel) -> Or
     order.cancelled_at = datetime.now(UTC)
     order.cancelled_by_id = user.id
     order.cancel_reason = data.reason
+    stock.return_for_order(db, user, order)
     db.commit()
     return order

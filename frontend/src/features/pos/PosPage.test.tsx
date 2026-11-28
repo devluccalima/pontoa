@@ -7,7 +7,7 @@ import { renderApp } from '../../test/renderApp'
 import { textMatcher } from '../../test/textMatcher'
 import { buildOrder, buildPayment } from '../../test/builders'
 
-const queijo: Product = { id: 'p1', category_id: 'c1', name: 'Arepa de queijo', description: null, price: '18.50', position: 0, active: true }
+const queijo: Product = { id: 'p1', category_id: 'c1', name: 'Arepa de queijo', description: null, price: '18.50', position: 0, active: true, stock_quantity: null }
 const suco: Product = { ...queijo, id: 'p2', category_id: 'c2', name: 'Suco', price: '9.00' }
 const inativo: Product = { ...queijo, id: 'p3', name: 'Fora do cardápio', active: false }
 const session = { id: 's1', is_open: true } as CashSession

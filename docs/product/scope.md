@@ -1,8 +1,8 @@
 
 # Pontoa — Escopo do Produto
 
-**Versão:** MVP 0.1  
-**Status:** Planejado  
+**Versão:** MVP 0.1 (em produção), 0.2 em andamento  
+**Status:** MVP implementado  
 **Primeiro cenário de validação:** Barraca de arepas
 
 ## 1. Visão
@@ -72,6 +72,13 @@ operação digital, rápida e organizada.
 - Configuração do estabelecimento
 - Isolamento entre estabelecimentos
 
+### Estoque (v0.2)
+- Controle opcional por produto
+- Saldo informado pelo dono (contagem ou produção)
+- Baixa automática na venda e devolução no cancelamento
+- Produto sem saldo não pode ser vendido
+- Histórico de movimentações
+
 ## 5. Regras de negócio essenciais
 
 RN-001: Cada pedido pertence a um estabelecimento.
@@ -102,13 +109,16 @@ RN-009: Usuários devem possuir permissões adequadas
 RN-010: Movimentações financeiras precisam ser
 rastreáveis e não devem ser apagadas diretamente.
 
+RN-011: Um produto com estoque controlado não pode
+ser vendido além do saldo disponível. O saldo
+continua de um dia para o outro.
+
 ## 6. Fora do MVP
 
 - Cardápio digital público
 - Delivery
 - WhatsApp
 - Impressão térmica
-- Controle de estoque
 - Combos e promoções
 - Variações e adicionais
 - Operação offline
@@ -127,3 +137,19 @@ Uma barraca deve conseguir operar um turno
 completo utilizando o Pontoa para registrar pedidos,
 acompanhar entregas, receber pagamentos e fechar
 o caixa sem depender de comandas em papel.
+
+## 9. Próximas etapas
+
+Ordem combinada: PDV → administração do Pontoa →
+landing page.
+
+1. **Estoque no PDV** (v0.2, em andamento).
+2. **Administração do Pontoa**, para o dono da
+   plataforma: clientes, planos, assinaturas e
+   cobranças mensais. No início, o pagamento é por
+   Pix e registrado manualmente. Depois do prazo
+   de tolerância, o cliente em atraso continua
+   entrando e consultando, mas não registra pedidos
+   novos.
+3. **Landing page** de venda, quando o nome e o
+   domínio estiverem definidos.

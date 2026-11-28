@@ -16,6 +16,7 @@ const queijo: Product = {
   price: '18.50',
   position: 0,
   active: true,
+  stock_quantity: null,
 }
 const suco: Product = { ...queijo, id: 'p2', category_id: 'c2', name: 'Suco de maracujá', price: '9.00' }
 

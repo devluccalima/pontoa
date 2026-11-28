@@ -45,6 +45,9 @@ class ProductRead(BaseModel):
     price: Money
     position: int
     active: bool
+    stock_quantity: int | None = Field(
+        description="Saldo em estoque; null quando o estoque não é controlado."
+    )
 
 
 class ProductCreate(RequestBody):
